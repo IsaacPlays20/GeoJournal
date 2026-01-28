@@ -41,10 +41,9 @@ function resetSidebarScroll() {
     if (area) area.scrollTo({top: 0, behavior: 'smooth'});
 }
 
-/* HYBRID MOBILE DRAGGING AND CLICKING LOGIC */
+/* MOBILE DRAGGING LOGIC WITH SCROLL BOUNDARY FIX */
 let startY = 0, startTop = 0, startTime = 0, isDragging = false;
 const mobileSidebar = document.getElementById('sidebar');
-const dragHandle = document.getElementById('mobileDragHandle');
 
 function triggerHaptic() {
     if (window.navigator && window.navigator.vibrate) {
@@ -64,10 +63,9 @@ function snapTo(state) {
         mobileSidebar.style.top = '50vh';
     } else {
         mobileSidebar.classList.remove('open', 'half');
-        mobileSidebar.style.top = 'calc(100vh - 85px)';
+        mobileSidebar.style.top = 'calc(100vh - 110px)'; 
     }
     triggerHaptic();
-    resetSidebarScroll();
 }
 
 function cycleMobileSheet() {
@@ -76,48 +74,60 @@ function cycleMobileSheet() {
     else snapTo('half');
 }
 
-if (dragHandle) {
-    dragHandle.addEventListener('touchstart', (e) => {
-        if (!document.body.classList.contains('mobile-mode')) return;
-        startY = e.touches[0].clientY;
-        startTop = mobileSidebar.offsetTop;
-        startTime = Date.now();
-        isDragging = false;
-        mobileSidebar.style.transition = 'none';
-    }, { passive: true });
+mobileSidebar.addEventListener('touchstart', (e) => {
+    if (!document.body.classList.contains('mobile-mode')) return;
+    startY = e.touches[0].clientY;
+    startTop = mobileSidebar.offsetTop;
+    startTime = Date.now();
+    isDragging = false;
+    mobileSidebar.style.transition = 'none';
+}, { passive: true });
 
-    dragHandle.addEventListener('touchmove', (e) => {
-        if (!document.body.classList.contains('mobile-mode')) return;
-        const touchY = e.touches[0].clientY;
-        const deltaY = touchY - startY;
-        if (Math.abs(deltaY) > 5) isDragging = true;
-        let newTop = startTop + deltaY;
-        const vh = window.innerHeight;
-        if (newTop < vh * 0.06) newTop = vh * 0.06;
-        if (newTop > vh - 85) newTop = vh - 85;
-        mobileSidebar.style.top = newTop + 'px';
-    }, { passive: true });
+mobileSidebar.addEventListener('touchmove', (e) => {
+    if (!document.body.classList.contains('mobile-mode')) return;
+    
+    const scrollArea = document.getElementById('mainScrollArea');
+    const touchY = e.touches[0].clientY;
+    const deltaY = touchY - startY;
+    
+    // Only allow drag if sheet is not open OR if we are at the boundaries of the scroll area
+    if (mobileSidebar.classList.contains('open') && e.target.closest('#mainScrollArea')) {
+        const isAtTop = scrollArea.scrollTop <= 0;
+        const isAtBottom = scrollArea.scrollHeight - scrollArea.scrollTop <= scrollArea.clientHeight + 1;
 
-    dragHandle.addEventListener('touchend', (e) => {
-        if (!document.body.classList.contains('mobile-mode')) return;
-        const duration = Date.now() - startTime;
-        if (!isDragging && duration < 200) {
-            cycleMobileSheet();
-            return;
-        }
-        const currentTop = mobileSidebar.offsetTop;
-        const vh = window.innerHeight;
-        if (currentTop < vh * 0.3) snapTo('open');
-        else if (currentTop < vh * 0.7) snapTo('half');
-        else snapTo('bottom');
-    });
+        // If trying to scroll up but not at top, or down but not at bottom, let internal scroll happen
+        if (deltaY > 0 && !isAtTop) return; 
+        if (deltaY < 0 && !isAtBottom) return;
+    }
+    
+    if (Math.abs(deltaY) > 5) {
+        isDragging = true;
+        if (e.cancelable) e.preventDefault(); // Stop internal scroll during panel drag
+    }
+    
+    let newTop = startTop + deltaY;
+    const vh = window.innerHeight;
+    if (newTop < vh * 0.06) newTop = vh * 0.06;
+    if (newTop > vh - 110) newTop = vh - 110;
+    mobileSidebar.style.top = newTop + 'px';
+}, { passive: false });
 
-    dragHandle.addEventListener('click', (e) => {
-        if (document.body.classList.contains('mobile-mode')) {
-            cycleMobileSheet();
-        }
-    });
-}
+mobileSidebar.addEventListener('touchend', (e) => {
+    if (!document.body.classList.contains('mobile-mode')) return;
+    const duration = Date.now() - startTime;
+    if (!isDragging) return;
+    
+    const currentTop = mobileSidebar.offsetTop;
+    const vh = window.innerHeight;
+    if (currentTop < vh * 0.3) snapTo('open');
+    else if (currentTop < vh * 0.7) snapTo('half');
+    else snapTo('bottom');
+});
+
+// Drag handle click still works
+document.getElementById('mobileDragHandle').addEventListener('click', (e) => {
+    if (document.body.classList.contains('mobile-mode')) cycleMobileSheet();
+});
 
 if (navigator.geolocation) {
     navigator.geolocation.watchPosition((position) => {
@@ -160,7 +170,10 @@ function toggleSidebar() {
     const sidebar = document.getElementById('sidebar');
     const expandBtn = document.getElementById('expandBtn');
     const dock = document.getElementById('elevation-dock');
-    if(document.body.classList.contains('mobile-mode')) { sidebar.classList.remove('open', 'half'); return; }
+    if(document.body.classList.contains('mobile-mode')) { 
+        snapTo('bottom'); // Functional Close Button logic
+        return; 
+    }
     const isMinimized = sidebar.classList.toggle('minimized');
     expandBtn.style.display = isMinimized ? 'flex' : 'none';
     if (isMinimized) { dock.style.left = '20px'; } else { dock.style.left = 'calc(var(--sidebar) + 20px)'; }
@@ -174,9 +187,7 @@ function goBack() {
     document.getElementById('detail-view').style.display = 'none';
     document.getElementById('mainSearch').style.display = 'block'; 
     closeElevation(); switchTab('explore');
-    if(document.body.classList.contains('mobile-mode')) { 
-        snapTo('open');
-    }
+    if(document.body.classList.contains('mobile-mode')) { snapTo('open'); }
     resetSidebarScroll();
 }
 
@@ -288,9 +299,7 @@ function showDetails(item, isWalk, layer) {
     document.getElementById('editColorContainer').style.display = 'none'; document.getElementById('explore-panel').style.display = 'none'; document.getElementById('add-panel').style.display = 'none'; document.getElementById('settings-panel').style.display = 'none'; document.getElementById('mainTabs').style.display = 'none'; document.getElementById('mainSearch').style.display = 'none'; 
     document.getElementById('backBtn').style.display = 'flex'; document.getElementById('minimizeBtn').style.display = 'none';
     document.getElementById('detail-view').style.display = 'flex';
-    if(document.body.classList.contains('mobile-mode')) { 
-        snapTo('half');
-    }
+    if(document.body.classList.contains('mobile-mode')) { snapTo('half'); }
     const floatEdit = document.getElementById('floatEditBtn'); floatEdit.innerHTML = '🖋️'; floatEdit.classList.remove('is-editing');
     document.getElementById('floatDeleteBtn').style.display = 'none'; document.getElementById('floatUploadBtn').style.display = 'none';
     document.getElementById('detPhoto').src = item.photo || "https://placehold.co/500x300?text=No+Photo";
