@@ -38,8 +38,9 @@ body, html {
 /* MOBILE MODE OVERRIDES */
 body.mobile-mode #sidebar {
     width: 100vw;
-    height: 90vh;
-    top: calc(100vh - 75px); 
+    height: 100vh;
+    max-height: calc(100% - 6vh); 
+    top: calc(100vh - 85px); 
     left: 0;
     border-right: none;
     border-top: 1px solid var(--border);
@@ -47,20 +48,21 @@ body.mobile-mode #sidebar {
     transform: none !important;
     opacity: 1 !important;
     pointer-events: auto !important;
+    padding-bottom: env(safe-area-inset-bottom);
 }
 
-body.mobile-mode #sidebar.open { top: 10vh; }
+body.mobile-mode #sidebar.open { top: 6vh; }
 body.mobile-mode #sidebar.half { top: 50vh; }
 body.mobile-mode #sidebar.hidden-sheet { top: 100vh !important; }
 
 body.mobile-mode #expandBtn { display: none !important; }
 
 .drag-handle {
-    display: none;
     width: 60px; height: 7px; background: var(--border);
     border-radius: 10px; margin: 15px auto 10px auto;
     flex-shrink: 0; cursor: pointer;
     transition: background 0.2s;
+    display: none;
 }
 .drag-handle:hover { background: #cbd5e1; }
 body.mobile-mode .drag-handle { display: block; }
@@ -130,16 +132,6 @@ body.mobile-mode .sidebar-header { padding-top: 0; }
 }
 .settings-label { font-size: 13px; font-weight: 600; opacity: 0.9; }
 
-.bottom-panel {
-    /* Use svh to ensure it fits above the browser chrome */
-    height: 80svh; 
-    
-    /* OR, if using fixed positioning, add padding for 'the notch' area */
-    padding-bottom: env(safe-area-inset-bottom);
-    
-    /* Ensure it doesn't overflow the screen */
-    max-height: calc(100% - 20px); 
-}
 .switch { position: relative; display: inline-block; width: 42px; height: 24px; }
 .switch input { opacity: 0; width: 0; height: 0; position: absolute; appearance: none; }
 .slider { position: absolute; cursor: pointer; inset: 0; background-color: #cbd5e1; transition: .3s; border-radius: 24px; }
@@ -234,7 +226,6 @@ body.mobile-mode #elevation-dock { left: 10px; right: 10px; height: 200px; }
 
 #modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.7); display: none; align-items: center; justify-content: center; z-index: 8000; backdrop-filter: blur(4px); }
 
-/* MODAL FORMATTING */
 .modal { background: var(--card); padding: 25px; border-radius: 20px; width: 340px; display: flex; flex-direction: column; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2); border: 1px solid var(--border); }
 .modal h3 { margin: 0 0 15px 0; font-size: 1.25rem; font-weight: 900; letter-spacing: -0.5px; text-align: center; }
 .modal-inputs { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
@@ -242,7 +233,6 @@ body.mobile-mode #elevation-dock { left: 10px; right: 10px; height: 200px; }
 .modal-input:focus { border-color: var(--primary); outline: none; }
 .modal-btns { display: flex; flex-direction: column; gap: 10px; }
 
-/* LAYER POPUP PRIORITY FIX */
 #layer-popup {
     position: absolute; right: 75px; top: 160px; background: var(--card); backdrop-filter: blur(20px);
     border: 1px solid var(--border); padding: 10px; border-radius: 15px; display: none;
