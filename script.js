@@ -264,7 +264,13 @@ function renderStars(item) {
     const rDiv = document.getElementById('detRating'); rDiv.innerHTML = "";
     for(let i=1; i<=5; i++) { const s = document.createElement('span'); s.innerText = i <= item.rating ? '★' : '☆'; s.onclick = () => { if(isEditing) { item.rating = i; renderStars(item); saveData(); } }; rDiv.appendChild(s); }
 }
-
+function toggleTheme() {
+    document.body.classList.toggle('dark-mode');
+    
+    // BUG FIX: Ensure you aren't removing the 'mobile-ui' class here!
+    // Bad code often looks like: document.body.className = 'dark-mode'; 
+    // Which wipes out all other classes. Use classList instead.
+}
 function toggleEditingLogic() {
     isEditing = !isEditing; const editBtn = document.getElementById('floatEditBtn'); editBtn.innerHTML = isEditing ? '✅' : '🖋️'; editBtn.classList.toggle('is-editing', isEditing);
     document.getElementById('floatDeleteBtn').style.display = isEditing ? 'flex' : 'none'; document.getElementById('floatUploadBtn').style.display = isEditing ? 'flex' : 'none'; document.getElementById('editColorContainer').style.display = isEditing ? 'block' : 'none';
