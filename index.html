@@ -6,10 +6,10 @@
     <title>GeoJournal v16.0 | Stable</title>
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="style.css">
+    
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <link rel="stylesheet" href="style.css">
 </head>
 <body class="light-theme">
 
@@ -17,7 +17,7 @@
         <button id="expandBtn" class="icon-btn" onclick="toggleSidebar()">☰</button>
 
         <aside id="sidebar">
-            <div class="drag-handle" onclick="cycleMobileSheet()"></div>
+            <div class="drag-handle" id="mobileDragHandle"></div>
             <div class="sidebar-header">
                 <div class="logo-row">
                     <h2 style="margin: 0; font-weight: 900; letter-spacing: -0.5px;">GeoJournal</h2>
