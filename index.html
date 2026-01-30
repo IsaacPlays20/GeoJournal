@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GeoJournal v17.0 | Stable</title>
+    <title>GeoJournal v18.0 | GPS Record</title>
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -95,7 +95,7 @@
             background: var(--primary); color: white; transform: scale(1.05); 
         }
 
-        .tab-btn.active, .filter-btn.active, .btn-main.active-mode, .layer-item-btn.active {
+        .tab-btn.active, .btn-main.active-mode, .layer-item-btn.active {
             background: var(--primary); color: white; opacity: 1;
         }
 
@@ -134,6 +134,17 @@
             transform: rotate(-45deg); border: 2px solid white;
             box-shadow: 0 0 0 1px rgba(0,0,0,0.2), 0 4px 8px rgba(0,0,0,0.3); z-index: 500;
         }
+
+        /* PIN TYPE GRID & BUTTONS */
+        .pin-type-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 10px 0; }
+        .type-btn {
+            aspect-ratio: 1/1; border-radius: 12px; border: none; cursor: pointer;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: 0.2s; color: white; padding: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .type-btn:hover { transform: scale(1.05); filter: brightness(1.1); }
+        .type-btn.active { outline: 3px solid var(--text); outline-offset: 2px; transform: scale(1.05); }
+        .type-btn span { font-size: 8px; font-weight: 900; text-transform: uppercase; margin-top: 2px; }
 
         .settings-container { display: flex; flex-direction: column; gap: 8px; padding-top: 10px; }
         .settings-row-refined { 
@@ -192,9 +203,33 @@
         .stat-sub-label { font-size: 10px; font-weight: 600; opacity: 0.7; }
         .stat-sub-value { font-size: 12px; font-weight: 800; color: var(--text); }
 
-        .filter-container { margin-bottom: 15px; display: flex; flex-direction: column; gap: 6px; }
-        .filter-row { display: flex; gap: 6px; }
-        .filter-btn { flex: 1; font-size: 10px; }
+        /* REWORKED FILTER STYLES */
+        .filter-container { margin-bottom: 20px; display: flex; flex-direction: column; gap: 8px; }
+        
+        .toggle-group-main { display: flex; gap: 8px; margin-bottom: 12px; }
+        .toggle-btn-main { 
+            flex: 1; height: 44px; border-radius: 12px; border: 1px solid var(--border); 
+            background: var(--bg); color: var(--text); font-weight: 800; font-size: 11px; 
+            cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; 
+            transition: 0.2s; text-transform: uppercase;
+        }
+        .toggle-btn-main.active { background: var(--primary); color: white; border-color: var(--primary); box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2); }
+
+        .filter-grid-reveal { 
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; 
+            background: rgba(0,0,0,0.03); padding: 10px; border-radius: 15px; border: 1px solid var(--border);
+            margin-bottom: 15px; animation: slideDown 0.3s ease-out;
+        }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .sub-toggle-btn {
+            height: 38px; border-radius: 10px; border: 1px solid var(--border);
+            background: white; color: var(--text); font-size: 10px; font-weight: 700;
+            cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px;
+            transition: 0.2s; text-transform: uppercase;
+        }
+        .dark-theme .sub-toggle-btn { background: #1e293b; }
+        .sub-toggle-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
 
         .gps-indicator-wrapper { position: relative; width: 14px; height: 14px; display: flex; align-items: center; justify-content: center; }
         .gps-indicator { width: 16px !important; height: 16px !important; background: #2563eb; border: 3px solid white; border-radius: 50% !important; z-index: 2; flex-shrink: 0; aspect-ratio: 1/1; box-shadow: 0 0 10px rgba(0,0,0,0.3); }
@@ -206,7 +241,7 @@
         .highlight-item { display: flex; align-items: center; gap: 10px; padding: 10px; background: rgba(0,0,0,0.03); border-radius: 12px; margin-bottom: 8px; cursor: pointer; border: 1px solid var(--border); transition: 0.2s; }
         .highlight-item:hover { background: var(--border); transform: translateY(-2px); }
         .highlight-thumb { width: 48px; height: 48px; border-radius: 8px; object-fit: cover; background: #ddd; flex-shrink: 0; }
-        .type-label { font-size: 9px; font-weight: 800; text-transform: uppercase; padding: 2px 5px; background: var(--primary); color: white; border-radius: 3px; display: inline-block; margin-bottom: 3px; }
+        .type-label { font-size: 9px; font-weight: 800; text-transform: uppercase; padding: 2px 5px; color: white; border-radius: 3px; display: inline-block; margin-bottom: 3px; }
 
         #detail-view { display: none; flex-direction: column; gap: 8px; }
         .edit-input { width: 100%; background: transparent; border: 1px solid transparent; border-radius: 6px; padding: 2px 5px; color: var(--text); font-family: inherit; box-sizing: border-box; }
@@ -216,7 +251,7 @@
 
         #explore-panel, #add-panel, #settings-panel, #detail-view { padding-bottom: 20px; }
 
-        .zoom-controls { position: absolute; top: 20px; right: 20px; z-index: 3000; display: flex; flex-direction: column; gap: 8px; }
+        .zoom-controls { position: absolute; top: 20px; right: 20px; z-index: 3000; display: flex; flex-direction: column; gap: 8px; transition: top 0.3s ease; }
         .btn { width: 100%; height: 42px; margin-bottom: 10px; font-size: 12px; }
 
         #elevation-dock { 
@@ -234,7 +269,7 @@
         .start-icon { background: #10b981; color: white; }
         .end-icon { background: #ef4444; color: white; }
 
-        #modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.7); display: none; align-items: center; justify-content: center; z-index: 8000; backdrop-filter: blur(4px); }
+        #modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.7); display: none; align-items: center; justify-content: center; z-index: 9999; backdrop-filter: blur(4px); }
 
         .modal { background: var(--card); padding: 25px; border-radius: 20px; width: 340px; display: flex; flex-direction: column; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2); border: 1px solid var(--border); }
         .modal h3 { margin: 0 0 15px 0; font-size: 1.25rem; font-weight: 900; letter-spacing: -0.5px; text-align: center; }
@@ -248,6 +283,7 @@
             border: 1px solid var(--border); padding: 10px; border-radius: 15px; display: none;
             flex-direction: column; gap: 6px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); 
             z-index: 7000 !important;
+            transition: top 0.3s;
         }
 
         .node-handle, .mid-handle { cursor: pointer; z-index: 99999 !important; }
@@ -264,7 +300,12 @@
         }
         .mode-btn span { font-size: 18px; margin-bottom: 1px; line-height: 1; }
         .mode-btn b { font-size: 9px; font-weight: 800; text-transform: uppercase; color: inherit; line-height: 1; }
-        .mode-btn.active { background: var(--primary); color: white !important; border-color: var(--primary); }
+        
+        /* Fixed specific colors for activity mode buttons */
+        .mode-btn[data-mode="walk"].active { background: #10b981; color: white !important; }
+        .mode-btn[data-mode="hike"].active { background: #d97706; color: white !important; }
+        .mode-btn[data-mode="run"].active { background: #ef4444; color: white !important; }
+        .mode-btn[data-mode="cycle"].active { background: #3b82f6; color: white !important; }
         .mode-btn.active b { color: white !important; }
 
         .elev-toggle-btn { 
@@ -272,15 +313,52 @@
             text-transform: uppercase; font-size: 12px; gap: 8px;
         }
 
-        .color-row { display: flex; gap: 8px; margin: 10px 0; justify-content: center; }
-        .color-dot { width: 24px; height: 24px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: 0.2s; }
-        .color-dot.active { border-color: var(--text); transform: scale(1.1); }
+        /* RECORDING UI POPOUT */
+        #recording-popout { 
+            display: none; position: fixed; 
+            top: 20px; left: calc(var(--sidebar) + 20px); right: 20px;
+            background: var(--primary); color: white; padding: 15px; 
+            border-radius: 20px; z-index: 9000; flex-direction: column; gap: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2); transition: transform 0.3s, top 0.3s;
+        }
+        body.mobile-mode #recording-popout { left: 10px; right: 10px; top: 10px; }
+        
+        .hud-stats { display: flex; justify-content: space-between; font-size: 13px; font-weight: 900; text-transform: uppercase; }
+        .hud-btns { display: flex; gap: 8px; }
+        .hud-btn { 
+            flex: 1; background: rgba(255,255,255,0.2); border: none; 
+            color: white; padding: 10px; border-radius: 10px; 
+            font-weight: 800; cursor: pointer; font-size: 11px;
+        }
+        .hud-btn.stop { background: var(--danger); }
+        .hud-btn.elev-toggle { background: rgba(0,0,0,0.2); }
+        
+        .elev-minmax { display: flex; justify-content: space-between; font-size: 10px; opacity: 0.9; font-weight: 800; }
+        .pulse-red { width: 8px; height: 8px; background: #ff4444; border-radius: 50%; display: inline-block; margin-right: 5px; animation: blink 1s infinite; }
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.2; } 100% { opacity: 1; } }
+
     </style>
 </head>
 <body class="light-theme">
 
     <div id="app">
         <button id="expandBtn" class="icon-btn" onclick="toggleSidebar()">☰</button>
+
+        <div id="recording-popout">
+            <div class="hud-stats">
+                <span><div class="pulse-red"></div><span id="hudTimer">00:00</span></span>
+                <span id="hudDist">0.00 km</span>
+            </div>
+            <div class="elev-minmax">
+                <span id="hudMinHeight">MIN: --m</span>
+                <span id="hudMaxHeight">MAX: --m</span>
+            </div>
+            <div class="hud-btns">
+                <button class="hud-btn elev-toggle" onclick="toggleGraph()">⛰️ GRAPH</button>
+                <button class="hud-btn" id="hudPausePlay">⏸ PAUSE</button>
+                <button class="hud-btn stop" id="hudStop">⏹ END</button>
+            </div>
+        </div>
 
         <aside id="sidebar">
             <div class="drag-handle" id="mobileDragHandle"></div>
@@ -305,23 +383,27 @@
             <div class="sidebar-scroll-area" id="mainScrollArea">
                 <div id="explore-panel">
                     <div class="filter-container">
-                        <div class="filter-row">
-                            <button class="filter-btn active" onclick="setFilter('type', 'all', this)">ALL</button>
-                            <button class="filter-btn" onclick="setFilter('type', 'PIN', this)">PINS</button>
-                            <button class="filter-btn" onclick="setFilter('type', 'WALK', this)">ACTIVITY</button>
+                        <div class="toggle-group-main">
+                            <button class="toggle-btn-main active" id="primaryTogglePins" onclick="togglePrimaryFilter('pins')">📍 Pins</button>
+                            <button class="toggle-btn-main active" id="primaryToggleWalks" onclick="togglePrimaryFilter('activities')">🏃 Activities</button>
                         </div>
-                        <div class="filter-row" id="activitySubFilters" style="display:none; margin-top: 4px;">
-                            <button class="filter-btn active" onclick="setFilter('activity', 'all', this)">ALL</button>
-                            <button class="filter-btn" onclick="setFilter('activity', 'walk', this)">WALK</button>
-                            <button class="filter-btn" onclick="setFilter('activity', 'hike', this)">HIKE</button>
-                            <button class="filter-btn" onclick="setFilter('activity', 'run', this)">RUN</button>
-                            <button class="filter-btn" onclick="setFilter('activity', 'cycle', this)">CYCLE</button>
+
+                        <div class="filter-grid-reveal" id="activityGridReveal">
+                            <button class="sub-toggle-btn active" data-type="walk" onclick="toggleSubFilter(this, 'activity')">🚶 Walk</button>
+                            <button class="sub-toggle-btn active" data-type="hike" onclick="toggleSubFilter(this, 'activity')">🥾 Hike</button>
+                            <button class="sub-toggle-btn active" data-type="run" onclick="toggleSubFilter(this, 'activity')">⚡ Run</button>
+                            <button class="sub-toggle-btn active" data-type="cycle" onclick="toggleSubFilter(this, 'activity')">🚲 Cycle</button>
                         </div>
-                        <div class="filter-row">
-                            <button class="filter-btn active" onclick="setFilter('sort', 'rating', this)">⭐ RATING</button>
-                            <button class="filter-btn" onclick="setFilter('sort', 'dist', this)">📍 DISTANCE</button>
+
+                        <div class="filter-grid-reveal" id="pinGridReveal">
+                            </div>
+
+                        <div class="filter-row" style="display:flex; gap:6px; margin-top: 5px;">
+                            <button class="filter-btn active" onclick="setSort('rating', this)" style="flex:1">⭐ RATING</button>
+                            <button class="filter-btn" onclick="setSort('dist', this)" style="flex:1">📍 DISTANCE</button>
                         </div>
                     </div>
+                    
                     <div id="highlights-list"></div>
                     <div class="scroll-spacer"></div>
                 </div>
@@ -329,7 +411,8 @@
                 <div id="add-panel" style="display:none;">
                     <button id="pinModeBtn" class="btn btn-main">📍 Drop a Pin</button>
                     <button id="walkModeBtn" class="btn btn-main">🏃 Draw Activity</button>
-                    
+                    <button id="recordModeBtn" class="btn btn-main" style="background: var(--primary); color: white;">🛰️ Record an Activity</button>
+
                     <div id="walk-options" style="display:none; margin: 10px 0; padding: 12px; background: rgba(0,0,0,0.03); border-radius: 12px; border: 1px solid var(--border);">
                         <div class="mode-selector" id="addModeSelector">
                             <button class="mode-btn active" data-mode="walk"><span>🚶</span><b>Walk</b></button>
@@ -341,7 +424,10 @@
                             <span class="settings-label" style="text-transform:none; font-size:12px;">Snap to Footpaths/Roads</span>
                             <label class="switch"><input type="checkbox" id="snapToggle"><span class="slider"></span></label>
                         </div>
-                        <button class="btn" id="undoAddBtn" style="margin-top:10px; height:32px; background:rgba(0,0,0,0.05); color:var(--text); font-size:11px;">↩ Undo Last</button>
+                        <div style="display:flex; gap:8px; margin-top:10px;">
+                            <button class="btn" id="undoAddBtn" style="flex:1; height:32px; background:rgba(0,0,0,0.05); color:var(--text); font-size:11px; margin:0;">↩ Undo</button>
+                            <button class="btn" id="cancelAddBtn" style="flex:1; height:32px; background:var(--danger); color:white; font-size:11px; margin:0;">✖ Cancel Plot</button>
+                        </div>
                     </div>
 
                     <div id="route-stats" style="display:none; background:rgba(0,0,0,0.05); padding:15px; border-radius:12px; margin-top: 5px;">
@@ -358,7 +444,7 @@
                             <label class="switch"><input type="checkbox" id="themeToggle"><span class="slider"></span></label>
                         </div>
                         <div style="margin-top: 10px; border-top: 1px solid var(--border); padding-top: 15px;">
-                            <p id="versionLabel" style="font-size: 11px; opacity: 0.5; text-align: center; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">GeoJournal V17 Stable</p>
+                            <p id="versionLabel" style="font-size: 11px; opacity: 0.5; text-align: center; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">GeoJournal V18.3 Stable</p>
                         </div>
                     </div>
                     <div class="scroll-spacer"></div>
@@ -368,7 +454,7 @@
                     <div class="detail-header-container">
                         <img id="detPhoto" src="">
                         <button class="floating-action-btn" id="floatEditBtn" title="Edit">🖋️</button>
-                        <button class="floating-action-btn btn-delete-float" id="floatDeleteBtn" style="display:none;" title="Delete">🗑️</button>
+                        <button class="floating-action-btn btn-delete-float" id="floatDeleteBtn" onclick="deleteAction()" style="display:none;" title="Delete">🗑️</button>
                         <label class="floating-action-btn btn-upload-float" id="floatUploadBtn" for="photoInput" style="display:none;" title="Upload Photo">📷</label>
                         <input type="file" id="photoInput" accept="image/*" style="display:none;">
                         <div id="detRating"></div>
@@ -391,9 +477,9 @@
                         <button class="btn" id="undoEditBtn" style="margin-top:10px; height:32px; background:var(--bg); border: 1px solid var(--border); font-size:11px;">↩ Undo Last Point</button>
                     </div>
 
-                    <div id="editColorContainer" style="display:none; margin-bottom: 10px;">
-                        <span class="stat-label">Item Color</span>
-                        <div class="color-row" id="detailColorPicker"></div>
+                    <div id="editTypeContainer" style="display:none; margin-bottom: 10px;">
+                        <span class="stat-label">Pin Category</span>
+                        <div class="pin-type-grid" id="detailTypePicker"></div>
                     </div>
                     <div id="detStats"></div>
                     <div class="info-card"><textarea id="editDesc" class="edit-input" rows="4" placeholder="No notes added..."></textarea></div>
@@ -403,11 +489,11 @@
         </aside>
 
         <div id="map">
-            <div class="zoom-controls">
+            <div class="zoom-controls" id="zoomCtrl">
                 <button class="zoom-btn" id="locateBtn"><div class="loc-icon-inner"></div></button>
                 <button class="zoom-btn" onclick="map.zoomIn()">+</button>
                 <button class="zoom-btn" onclick="map.zoomOut()">−</button>
-                <button class="zoom-btn" onclick="toggleLayerMenu()" title="Map Layers">🗺️</button>
+                <button class="zoom-btn" id="layerBtn" onclick="toggleLayerMenu()" title="Map Layers">🗺️</button>
             </div>
             <div id="layer-popup">
                 <button class="layer-item-btn" onclick="setMapLayer('voyager')">🏙️ Voyager</button>
@@ -428,12 +514,15 @@
 
     <div id="modal-overlay">
         <div class="modal">
-            <h3>Save Entry</h3>
+            <h3 id="modalTitle">Save Entry</h3>
             <div id="modalStars" style="font-size: 2.2rem; color: #cbd5e1; cursor: pointer; display: flex; gap: 6px; margin-bottom: 10px; justify-content: center;">
                 <span class="star" data-value="1">★</span><span class="star" data-value="2">★</span><span class="star" data-value="3">★</span><span class="star" data-value="4">★</span><span class="star" data-value="5">★</span>
             </div>
             <div class="modal-inputs">
-                <div class="color-row" id="modalColorPicker"></div>
+                <div id="pinTypeSelect" style="display:none;">
+                   <span class="stat-label" style="text-align:center; display:block; margin-bottom:10px;">Select Pin Category</span>
+                   <div class="pin-type-grid" id="modalTypePicker"></div>
+                </div>
                 <input type="text" id="itemName" class="modal-input" placeholder="Location Name">
                 <textarea id="itemDesc" class="modal-input" placeholder="Notes..." style="height: 100px; resize: none;"></textarea>
             </div>
@@ -444,17 +533,69 @@
         </div>
     </div>
 
-    <script>
-        const COLORS = ['#2563eb', '#10b981', '#ef4444', '#f59e0b', '#8b5cf6', '#ec4899', '#06b6d4'];
-        let selectedColor = COLORS[0];
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
-        let storage = JSON.parse(localStorage.getItem('geojournal_v11')) || { pins: [], walks: [], theme: 'light', mapStyle: 'voyager', isMobile: false };
+    <script>
+        // --- 1. FIREBASE CONFIGURATION ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyBG6ip3Uh6bDNgdr54Oy6sEtKxJROw4DC4",
+            authDomain: "geojournal-fa10f.firebaseapp.com",
+            databaseURL: "https://geojournal-fa10f-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "geojournal-fa10f",
+            storageBucket: "geojournal-fa10f.firebasestorage.app",
+            messagingSenderId: "185220958678",
+            appId: "1:185220958678:web:d418dce420543722417c77",
+            measurementId: "G-PX3SDJXSQR"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // Pin Categories
+        const PIN_TYPES = [
+            { name: 'Nature', color: '#10b981', icon: '🌿' },
+            { name: 'History', color: '#ef4444', icon: '🏛️' },
+            { name: 'Culture', color: '#d97706', icon: '🎨' },
+            { name: 'Paid', color: '#8b5cf6', icon: '🎟️' },
+            { name: 'Water', color: '#3b82f6', icon: '💧' },
+            { name: 'Activity', color: '#eab308', icon: '⚽' },
+            { name: 'Event', color: '#ec4899', icon: '📅' }
+        ];
+
+        // Activity Color Coding
+        const ACTIVITY_COLORS = {
+            walk: '#10b981', 
+            hike: '#d97706', 
+            run: '#ef4444',  
+            cycle: '#3b82f6' 
+        };
+
+        let selectedColor = PIN_TYPES[0].color;
+        let storage = { pins: [], walks: [], theme: 'light', mapStyle: 'voyager', isMobile: false };
         let currentMode = 'explore', tempPath = [], pendingCoords = null, activeSelectionId = null, currentRating = 0, isEditing = false, graphOpen = false;
-        let activeFilters = { type: 'all', sort: 'rating', activity: 'all' };
+        
+        // Reworked Filters Object
+        let activeFilters = {
+            showPins: true,
+            showWalks: true,
+            activities: ['walk', 'hike', 'run', 'cycle'],
+            categories: PIN_TYPES.map(t => t.name),
+            sort: 'rating'
+        };
+
         let mapItems = new L.FeatureGroup(), userPos = null, userMarker = null, nodeHandles = [], waypointMarkers = [], chartInstance = null;
         let elevationAbortController = null;
         let isFirstLocationLoad = true; 
         let walkHistory = [];
+
+        // Recording State
+        let isRecording = false;
+        let isPaused = false;
+        let liveElevData = [];
+        let recordStartTime = null;
+        let recordTimerInterval = null;
+        let finalRecordedTime = 0;
 
         const map = L.map('map', { zoomControl: false }).setView([51.505, -0.09], 13);
         mapItems.addTo(map);
@@ -468,7 +609,96 @@
         };
 
         let baseLayer = L.tileLayer(mapStyles[storage.mapStyle] || mapStyles.voyager).addTo(map);
-        let tempPoly = L.polyline([], {color: '#10b981', weight: 4, dashArray: '5, 10'}).addTo(map);
+        let tempPoly = L.polyline([], {color: '#2563eb', weight: 6, opacity: 0.8}).addTo(map);
+
+        // --- DATABASE SYNC FUNCTIONS ---
+        async function loadPermanentData() {
+            try {
+                const pinSnapshot = await db.collection("pins").get();
+                storage.pins = pinSnapshot.docs.map(doc => doc.data());
+                
+                const walkSnapshot = await db.collection("walks").get();
+                storage.walks = walkSnapshot.docs.map(doc => {
+                    const d = doc.data();
+                    if (d.path && d.path.length > 0 && typeof d.path[0] === 'object' && !Array.isArray(d.path[0])) {
+                        d.path = d.path.map(p => [p.lat, p.lng]);
+                    }
+                    return d;
+                });
+                
+                initFiltersUI();
+                refreshMapItems();
+                updateHighlights();
+            } catch (e) { console.error("Database load error:", e); }
+        }
+
+        async function saveToCloud(collection, data) {
+            try {
+                const cleanData = JSON.parse(JSON.stringify(data));
+                if (cleanData.path && cleanData.path.length > 0 && Array.isArray(cleanData.path[0])) {
+                    cleanData.path = cleanData.path.map(p => ({ lat: p[0], lng: p[1] }));
+                }
+                await db.collection(collection).doc(cleanData.id.toString()).set(cleanData);
+            } catch (e) { console.error("Cloud save error:", e); }
+        }
+
+        // --- NEW REDESIGNED FILTER LOGIC ---
+        function initFiltersUI() {
+            const pinGrid = document.getElementById('pinGridReveal');
+            pinGrid.innerHTML = '';
+            PIN_TYPES.forEach(cat => {
+                const btn = document.createElement('button');
+                btn.className = 'sub-toggle-btn active';
+                btn.dataset.cat = cat.name;
+                btn.innerHTML = `${cat.icon} ${cat.name}`;
+                btn.onclick = () => toggleSubFilter(btn, 'category');
+                pinGrid.appendChild(btn);
+            });
+        }
+
+        function togglePrimaryFilter(type) {
+            if (type === 'pins') {
+                activeFilters.showPins = !activeFilters.showPins;
+                document.getElementById('primaryTogglePins').classList.toggle('active', activeFilters.showPins);
+                document.getElementById('pinGridReveal').style.display = activeFilters.showPins ? 'grid' : 'none';
+            } else {
+                activeFilters.showWalks = !activeFilters.showWalks;
+                document.getElementById('primaryToggleWalks').classList.toggle('active', activeFilters.showWalks);
+                document.getElementById('activityGridReveal').style.display = activeFilters.showWalks ? 'grid' : 'none';
+            }
+            updateHighlights();
+        }
+
+        function toggleSubFilter(btn, filterType) {
+            btn.classList.toggle('active');
+            const isActive = btn.classList.contains('active');
+            
+            if (filterType === 'activity') {
+                const val = btn.dataset.type;
+                if (isActive) activeFilters.activities.push(val);
+                else activeFilters.activities = activeFilters.activities.filter(a => a !== val);
+            } else {
+                const val = btn.dataset.cat;
+                if (isActive) activeFilters.categories.push(val);
+                else activeFilters.categories = activeFilters.categories.filter(c => c !== val);
+            }
+            updateHighlights();
+        }
+
+        function setSort(type, btn) {
+            activeFilters.sort = type;
+            btn.parentElement.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            updateHighlights();
+        }
+
+        // Device / Theme setup
+        if (localStorage.getItem('geojournal_v11')) {
+            const localData = JSON.parse(localStorage.getItem('geojournal_v11'));
+            storage.theme = localData.theme || 'light';
+            storage.mapStyle = localData.mapStyle || 'voyager';
+            storage.isMobile = localData.isMobile || false;
+        }
 
         if (storage.isMobile) {
             document.body.classList.add('mobile-mode');
@@ -489,6 +719,35 @@
             if (area) area.scrollTo({top: 0, behavior: 'smooth'});
         }
 
+        // Activity selector logic
+        document.querySelectorAll('#addModeSelector .mode-btn, #editModeSelector .mode-btn').forEach(btn => {
+            btn.onclick = () => {
+                const parent = btn.parentElement;
+                parent.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                const activityMode = btn.dataset.mode;
+                selectedColor = ACTIVITY_COLORS[activityMode];
+
+                if (currentMode === 'walk') {
+                    tempPoly.setStyle({color: selectedColor});
+                }
+                
+                if (isEditing && activeSelectionId) {
+                    const walk = storage.walks.find(w => w.id === activeSelectionId);
+                    if (walk) {
+                        walk.activity = activityMode;
+                        walk.color = selectedColor;
+                        if (window.currentActiveLayer) {
+                            window.currentActiveLayer.setStyle({color: selectedColor});
+                        }
+                        updateWalkStats();
+                    }
+                }
+            };
+        });
+
+        // Mobile Dragging logic
         let startY = 0, startTop = 0, startTime = 0, isDragging = false;
         const mobileSidebar = document.getElementById('sidebar');
         const dragHandle = document.getElementById('mobileDragHandle');
@@ -563,6 +822,7 @@
             }
         });
 
+        // GPS watcher
         if (navigator.geolocation) {
             navigator.geolocation.watchPosition((position) => {
                 const latlng = L.latLng(position.coords.latitude, position.coords.longitude);
@@ -571,31 +831,85 @@
                     userMarker = L.marker(latlng, { icon: L.divIcon({ className: '', html: '<div class="gps-indicator-wrapper"><div class="gps-indicator"></div><div class="gps-pulse"></div></div>', iconSize: [14, 14], iconAnchor: [7, 7] }) }).addTo(map);
                 } else { userMarker.setLatLng(latlng); }
                 if (isFirstLocationLoad) { map.setView(latlng, 15); isFirstLocationLoad = false; }
-                updateHighlights();
+                
+                if(isRecording && !isPaused) {
+                    if(tempPath.length === 0 || latlng.distanceTo(L.latLng(tempPath[tempPath.length-1][0], tempPath[tempPath.length-1][1])) > 5) {
+                        tempPath.push([latlng.lat, latlng.lng]);
+                        tempPoly.setLatLngs(tempPath);
+                        let d = 0; for(let i=1; i<tempPath.length; i++) d += L.latLng(tempPath[i-1][0], tempPath[i-1][1]).distanceTo(L.latLng(tempPath[i][0], tempPath[i][1])); 
+                        document.getElementById('hudDist').innerText = `${(d/1000).toFixed(2)} km`;
+                        fetchLivePointElevation(latlng.lat, latlng.lng);
+                    }
+                }
             }, (error) => console.error(error), { enableHighAccuracy: true, maximumAge: 0, timeout: 5000 });
         }
 
-        function setupColorPickers() {
-            ['modalColorPicker', 'detailColorPicker'].forEach(id => {
+        async function fetchLivePointElevation(lat, lon) {
+            try {
+                const res = await fetch(`https://api.open-elevation.com/api/v1/lookup?locations=${lat},${lon}`).then(r=>r.json());
+                if(res.results && res.results[0]) {
+                    const e = res.results[0].elevation;
+                    liveElevData.push(e);
+                    const min = Math.round(Math.min(...liveElevData));
+                    const max = Math.round(Math.max(...liveElevData));
+                    document.getElementById('hudMinHeight').innerText = `MIN: ${min}m`;
+                    document.getElementById('hudMaxHeight').innerText = `MAX: ${max}m`;
+                    if(graphOpen) renderLiveRecordingGraph();
+                }
+            } catch(e){}
+        }
+
+        function renderLiveRecordingGraph() {
+            document.getElementById('elevation-dock').classList.add('active');
+            let currentTotal = 0, distData = [0]; 
+            for(let j = 1; j < tempPath.length; j++){ 
+                currentTotal += L.latLng(tempPath[j-1][0], tempPath[j-1][1]).distanceTo(L.latLng(tempPath[j][0], tempPath[j][1])); 
+                distData.push(currentTotal / 1000); 
+            }
+            const ctx = document.getElementById('elevChart').getContext('2d'); 
+            if(chartInstance) chartInstance.destroy();
+            chartInstance = new Chart(ctx, { 
+                type:'line', 
+                data:{ 
+                    labels: distData.map(d => d.toFixed(1)), 
+                    datasets:[{ data:liveElevData, borderColor:'#2563eb', backgroundColor: 'rgba(37, 99, 235, 0.15)', fill:true, pointRadius:0, borderWidth: 2, tension:0.4 }] 
+                }, 
+                options:{ maintainAspectRatio:false, plugins:{ legend:{display:false} }, scales:{ x:{ title:{display:true, text:'km'} }, y:{ title:{display:true, text:'m'}, position:'right' } } } 
+            });
+        }
+
+        function setupTypePickers() {
+            ['modalTypePicker', 'detailTypePicker'].forEach(id => {
                 const el = document.getElementById(id); if (!el) return;
                 el.innerHTML = '';
-                COLORS.forEach(c => {
-                    const dot = document.createElement('div'); dot.className = 'color-dot';
-                    dot.style.backgroundColor = c; if(c === selectedColor) dot.classList.add('active');
-                    dot.onclick = () => {
-                        selectedColor = c; document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('active')); dot.classList.add('active');
-                        if(id === 'detailColorPicker' && isEditing) {
+                PIN_TYPES.forEach(t => {
+                    const btn = document.createElement('button'); 
+                    btn.className = 'type-btn';
+                    btn.style.backgroundColor = t.color;
+                    if(t.color === selectedColor) btn.classList.add('active');
+                    btn.innerHTML = `${t.icon}<span>${t.name}</span>`;
+                    btn.onclick = (e) => {
+                        e.preventDefault();
+                        selectedColor = t.color; 
+                        el.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active')); 
+                        btn.classList.add('active');
+                        if(id === 'detailTypePicker' && isEditing) {
                             const item = storage.pins.find(p=>p.id===activeSelectionId) || storage.walks.find(w=>w.id===activeSelectionId);
-                            if(item) { item.color = c; saveData(); refreshMapItems(); }
+                            if(item) { 
+                                item.color = t.color; 
+                                saveData(); 
+                                saveToCloud(item.path ? 'walks' : 'pins', item);
+                                refreshMapItems(); 
+                            }
                         }
-                    }; el.appendChild(dot);
+                    }; el.appendChild(btn);
                 });
             });
         }
 
         function toggleLayerMenu() { const menu = document.getElementById('layer-popup'); menu.style.display = menu.style.display === 'flex' ? 'none' : 'flex'; }
         function setMapLayer(style) { storage.mapStyle = style; map.removeLayer(baseLayer); baseLayer = L.tileLayer(mapStyles[style], { maxZoom: 18 }).addTo(map); saveData(); document.getElementById('layer-popup').style.display = 'none'; }
-        function isUIPressed(e) { return e.originalEvent.target.closest('#sidebar') || e.originalEvent.target.closest('#elevation-dock') || e.originalEvent.target.closest('.zoom-controls') || e.originalEvent.target.closest('#layer-popup') || e.originalEvent.target.closest('#expandBtn'); }
+        function isUIPressed(e) { return e.originalEvent.target.closest('#sidebar') || e.originalEvent.target.closest('#elevation-dock') || e.originalEvent.target.closest('.zoom-controls') || e.originalEvent.target.closest('#layer-popup') || e.originalEvent.target.closest('#expandBtn') || e.originalEvent.target.closest('#recording-popout'); }
 
         const locateBtn = document.getElementById('locateBtn');
         if (locateBtn) locateBtn.onclick = (e) => { L.DomEvent.stopPropagation(e); if (userPos) map.setView(userPos, 15); };
@@ -618,6 +932,7 @@
             document.getElementById('detail-view').style.display = 'none';
             document.getElementById('editWalkOptions').style.display = 'none';
             document.getElementById('mainSearch').style.display = 'block'; 
+            waypointMarkers.forEach(m => map.removeLayer(m)); waypointMarkers = [];
             closeElevation(); switchTab('explore');
             if(document.body.classList.contains('mobile-mode')) snapTo('open');
             resetSidebarScroll();
@@ -637,45 +952,176 @@
             resetSidebarScroll();
         }
 
-        function setFilter(category, value, btn) { 
-            activeFilters[category] = value; 
-            btn.parentElement.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active')); 
-            btn.classList.add('active'); 
-            const sub = document.getElementById('activitySubFilters');
-            if (category === 'type') {
-                sub.style.display = (value === 'WALK') ? 'flex' : 'none';
-                if (value !== 'WALK') activeFilters.activity = 'all';
-            }
-            updateHighlights(); 
-        }
-
         function setMode(mode) {
             currentMode = mode; document.querySelectorAll('.btn-main').forEach(b => b.classList.remove('active-mode'));
             if (document.getElementById(mode + 'ModeBtn')) document.getElementById(mode + 'ModeBtn').classList.add('active-mode');
+            
             document.getElementById('route-stats').style.display = (mode === 'walk' ? 'block' : 'none');
             document.getElementById('walk-options').style.display = (mode === 'walk' ? 'block' : 'none');
+            document.getElementById('recordModeBtn').style.display = (mode === 'record' || isRecording ? 'none' : 'block');
+            
+            const popout = document.getElementById('recording-popout');
+            popout.style.display = (isRecording ? 'flex' : 'none');
+            
+            const zoomCtrl = document.getElementById('zoomCtrl');
+            const layerPop = document.getElementById('layer-popup');
+            if(isRecording) {
+                zoomCtrl.style.top = (popout.offsetHeight + 40) + 'px';
+                layerPop.style.top = (popout.offsetHeight + 180) + 'px';
+            } else {
+                zoomCtrl.style.top = '20px';
+                layerPop.style.top = '160px';
+            }
+            
             isEditing = false; nodeHandles.forEach(h => map.removeLayer(h));
-            if(mode !== 'walk' && mode !== 'pin') { tempPath = []; walkHistory = []; tempPoly.setLatLngs([]); }
+            if(mode !== 'walk' && mode !== 'pin' && mode !== 'record') { 
+                tempPath = []; 
+                walkHistory = []; 
+                tempPoly.setLatLngs([]); 
+                closeElevation();
+            }
         }
 
-        const pinModeBtn = document.getElementById('pinModeBtn');
-        const walkModeBtn = document.getElementById('walkModeBtn');
-        if (pinModeBtn) pinModeBtn.onclick = () => { selectedColor = COLORS[0]; setupColorPickers(); setMode('pin'); };
-        if (walkModeBtn) walkModeBtn.onclick = () => { selectedColor = COLORS[0]; setupColorPickers(); setMode('walk'); };
+        if (pinModeBtn) pinModeBtn.onclick = () => { selectedColor = PIN_TYPES[0].color; setupTypePickers(); setMode('pin'); };
+        if (walkModeBtn) walkModeBtn.onclick = () => { 
+            const activityMode = document.querySelector('#addModeSelector .mode-btn.active').dataset.mode;
+            selectedColor = ACTIVITY_COLORS[activityMode];
+            tempPoly.setStyle({color: selectedColor});
+            setupTypePickers(); 
+            setMode('walk'); 
+        };
+        if (recordModeBtn) recordModeBtn.onclick = startRecording;
+
+        document.getElementById('cancelAddBtn').onclick = () => {
+            if(confirm("Discard current plot?")) {
+                tempPath = [];
+                walkHistory = [];
+                tempPoly.setLatLngs([]);
+                document.getElementById('liveDist').innerText = '0.00 km';
+                closeElevation();
+                setMode('ready');
+            }
+        };
+
+        function startRecording() {
+            if(!userPos) { alert("Waiting for GPS signal..."); return; }
+            isRecording = true;
+            isPaused = false;
+            liveElevData = [];
+            tempPath = [[userPos.lat, userPos.lng]];
+            
+            const activityMode = document.querySelector('#addModeSelector .mode-btn.active').dataset.mode;
+            tempPoly.setLatLngs(tempPath);
+            tempPoly.setStyle({color: ACTIVITY_COLORS[activityMode], dashArray: null}); 
+            
+            recordStartTime = Date.now();
+            finalRecordedTime = 0;
+            startTimer();
+
+            setMode('record');
+            document.getElementById('hudPausePlay').innerText = '⏸ PAUSE';
+            document.getElementById('hudMinHeight').innerText = 'MIN: --m';
+            document.getElementById('hudMaxHeight').innerText = 'MAX: --m';
+            map.flyTo(userPos, 16);
+            if(document.body.classList.contains('mobile-mode')) snapTo('bottom');
+            fetchLivePointElevation(userPos.lat, userPos.lng);
+        }
+
+        function startTimer() {
+            if(recordTimerInterval) clearInterval(recordTimerInterval);
+            recordTimerInterval = setInterval(() => {
+                if(!isPaused) {
+                    const diff = Date.now() - recordStartTime;
+                    const sec = Math.floor(diff / 1000) % 60;
+                    const min = Math.floor(diff / 60000) % 60;
+                    const hrs = Math.floor(diff / 3600000);
+                    document.getElementById('hudTimer').innerText = 
+                        (hrs > 0 ? hrs + ":" : "") + 
+                        String(min).padStart(2, '0') + ":" + 
+                        String(sec).padStart(2, '0');
+                    finalRecordedTime = Math.floor(diff / 60000); 
+                }
+            }, 1000);
+        }
+
+        document.getElementById('hudPausePlay').onclick = () => {
+            isPaused = !isPaused;
+            document.getElementById('hudPausePlay').innerText = isPaused ? '▶ RESUME' : '⏸ PAUSE';
+            document.getElementById('hudPausePlay').style.background = isPaused ? 'var(--accent)' : 'rgba(255,255,255,0.2)';
+            if(isPaused) { this._pauseStart = Date.now(); } 
+            else { recordStartTime += (Date.now() - this._pauseStart); }
+        };
+
+        document.getElementById('hudStop').onclick = () => {
+            isRecording = false;
+            clearInterval(recordTimerInterval);
+            if(tempPath.length > 1) {
+                const activityMode = document.querySelector('#addModeSelector .mode-btn.active').dataset.mode;
+                selectedColor = ACTIVITY_COLORS[activityMode] || ACTIVITY_COLORS.walk;
+                setupTypePickers();
+                resetModal();
+                document.getElementById('pinTypeSelect').style.display = 'none'; 
+                document.getElementById('modal-overlay').style.display = 'flex';
+            } else {
+                tempPath = [];
+                tempPoly.setLatLngs([]);
+                setMode('ready');
+            }
+            closeElevation();
+        };
+
+        document.getElementById('finishWalkBtn').onclick = () => {
+            if (tempPath.length < 2) { alert("Please draw a route first!"); return; }
+            const activityMode = document.querySelector('#addModeSelector .mode-btn.active').dataset.mode;
+            selectedColor = ACTIVITY_COLORS[activityMode] || ACTIVITY_COLORS.walk;
+            setupTypePickers();
+            resetModal();
+            document.getElementById('pinTypeSelect').style.display = 'none';
+            document.getElementById('modal-overlay').style.display = 'flex';
+        };
 
         function updateHighlights() {
             const list = document.getElementById('highlights-list'); if (!list) return;
-            let all = [...storage.pins.map(p => ({...p, type:'PIN'})), ...storage.walks.map(w => ({...w, type:'WALK', lat:w.path[0][0], lng:w.path[0][1]}))];
-            if (activeFilters.type !== 'all') all = all.filter(i => i.type === activeFilters.type);
-            if (activeFilters.type === 'WALK' && activeFilters.activity !== 'all') all = all.filter(i => i.activity === activeFilters.activity);
+            let all = [
+                ...storage.pins.map(p => ({...p, type:'PIN'})), 
+                ...storage.walks.map(w => ({...w, type:'WALK', lat:w.path[0][0], lng:w.path[0][1]}))
+            ];
+            
+            all = all.filter(i => {
+                if (i.type === 'PIN') {
+                    if (!activeFilters.showPins) return false;
+                    const cat = PIN_TYPES.find(t => t.color === i.color);
+                    return cat && activeFilters.categories.includes(cat.name);
+                }
+                if (i.type === 'WALK') {
+                    if (!activeFilters.showWalks) return false;
+                    return activeFilters.activities.includes(i.activity || 'walk');
+                }
+                return true;
+            });
+
             if (userPos) all.forEach(i => i.d = L.latLng(i.lat, i.lng).distanceTo(userPos) / 1000);
             if (activeFilters.sort === 'rating') all.sort((a,b) => b.rating - a.rating); else all.sort((a,b) => (a.d || 0) - (b.d || 0));
-            list.innerHTML = all.length ? '' : '<p style="font-size:12px;opacity:0.5;text-align:center;margin-top:20px;">Empty library.</p>';
+            
+            list.innerHTML = all.length ? '' : '<p style="font-size:12px;opacity:0.5;text-align:center;margin-top:20px;">No items match filters.</p>';
             all.forEach(i => {
                 const div = document.createElement('div'); div.className = 'highlight-item'; div.style.borderLeft = `4px solid ${i.color || '#2563eb'}`;
-                const icon = i.activity === 'cycle' ? '🚲' : (i.activity === 'run' ? '⚡' : (i.activity === 'hike' ? '🥾' : '🚶'));
-                const label = i.type === 'WALK' ? (i.activity ? i.activity.toUpperCase() : 'WALK') : 'PIN';
-                div.innerHTML = `<img class="highlight-thumb" src="${i.photo || 'https://placehold.co/100x100?text=No+Photo'}"><div style="flex:1"><span class="type-label" style="background:${i.color || '#2563eb'}">${i.type === 'WALK' ? icon : '📍'} ${label}</span><p style="font-weight:bold;font-size:13px;margin:0;">${i.name}</p><div style="font-size:11px;color:#fbbf24;">${'★'.repeat(i.rating)} <span style="color:var(--text);opacity:0.5;">${i.d?i.d.toFixed(1)+'km':''}</span></div></div>`;
+                
+                let labelText = '';
+                let labelColor = i.color || '#2563eb';
+                let iconChar = '📍';
+
+                if (i.type === 'WALK') {
+                    iconChar = i.activity === 'cycle' ? '🚲' : (i.activity === 'run' ? '⚡' : (i.activity === 'hike' ? '🥾' : '🚶'));
+                    labelText = i.activity ? i.activity.toUpperCase() : 'WALK';
+                    labelColor = ACTIVITY_COLORS[i.activity] || '#2563eb';
+                } else {
+                    const category = PIN_TYPES.find(t => t.color === i.color);
+                    labelText = category ? category.name.toUpperCase() : 'PIN';
+                    iconChar = category ? category.icon : '📍';
+                }
+
+                div.innerHTML = `<img class="highlight-thumb" src="${i.photo || 'https://placehold.co/100x100?text=No+Photo'}"><div style="flex:1"><span class="type-label" style="background:${labelColor}">${iconChar} ${labelText}</span><p style="font-weight:bold;font-size:13px;margin:0;">${i.name}</p><div style="font-size:11px;color:#fbbf24;">${'★'.repeat(i.rating)} <span style="color:var(--text);opacity:0.5;">${i.d?i.d.toFixed(1)+'km':''}</span></div></div>`;
                 div.onclick = () => { 
                     const obj = i.type === 'PIN' ? storage.pins.find(p=>p.id===i.id) : storage.walks.find(w=>w.id===i.id); 
                     if(i.type === 'WALK' && obj.path) {
@@ -683,11 +1129,11 @@
                         const sidePadding = document.body.classList.contains('mobile-mode') ? 20 : (parseInt(getComputedStyle(document.documentElement).getPropertyValue('--sidebar')) + 40);
                         const bottomPadding = document.body.classList.contains('mobile-mode') ? (window.innerHeight / 2) : 40;
                         map.flyToBounds(poly.getBounds(), { paddingBottomRight: [sidePadding, bottomPadding], paddingTopLeft: [20, 20], duration: 1.5 });
-                    } else { map.flyTo([i.lat, i.lng], 15); }
-                    map.once('moveend', () => { 
-                        const layer = mapItems.getLayers().find(l => (i.type === 'WALK' && l instanceof L.Polyline && JSON.stringify(l.getLatLngs()[0]) === JSON.stringify(L.latLng(i.lat, i.lng))) || (i.type === 'PIN' && l instanceof L.Marker && l.getLatLng().equals(L.latLng(i.lat, i.lng)))); 
-                        showDetails(obj, i.type==='WALK', layer); 
-                    }); 
+                        map.once('moveend', () => showDetails(obj, true, null)); 
+                    } else { 
+                        map.flyTo([i.lat, i.lng], 15);
+                        map.once('moveend', () => showDetails(obj, false, null));
+                    }
                 };
                 list.appendChild(div);
             });
@@ -710,7 +1156,7 @@
             if (isEditing && window.currentActiveLayer instanceof L.Polyline) { 
                 const lls = window.currentActiveLayer.getLatLngs(); 
                 const snapEnabled = document.getElementById('editSnapToggle').checked;
-                walkHistory.push(lls.map(l => [l.lat, l.lng]));
+                walkHistory.push(lls.map(l => L.latLng(l.lat, l.lng)));
                 if (snapEnabled && lls.length > 0) {
                     const roadNodes = await getSnappedPath(lls[lls.length - 1], e.latlng);
                     roadNodes.forEach(node => lls.push(L.latLng(node[0], node[1])));
@@ -720,17 +1166,23 @@
                 fetchElevation(lls.map(l => [l.lat, l.lng]), false); 
                 return; 
             }
-            if (currentMode === 'pin') { pendingCoords = e.latlng; currentRating = 0; resetModal(); document.getElementById('modal-overlay').style.display = 'flex'; }
+            if (currentMode === 'pin') { 
+                pendingCoords = e.latlng; 
+                currentRating = 0; 
+                resetModal(); 
+                document.getElementById('pinTypeSelect').style.display = 'block';
+                document.getElementById('modal-overlay').style.display = 'flex'; 
+            }
             if (currentMode === 'walk') {
                 const snapEnabled = document.getElementById('snapToggle').checked;
-                walkHistory.push([...tempPath]);
+                walkHistory.push(JSON.parse(JSON.stringify(tempPath)));
                 if (snapEnabled && tempPath.length > 0) {
                     const lastPt = L.latLng(tempPath[tempPath.length - 1][0], tempPath[tempPath.length - 1][1]);
                     const roadNodes = await getSnappedPath(lastPt, e.latlng);
                     tempPath.push(...roadNodes);
                 } else { tempPath.push([e.latlng.lat, e.latlng.lng]); }
                 tempPoly.setLatLngs(tempPath); 
-                let d = 0; for(let i=1; i<tempPath.length; i++) d += L.latLng(tempPath[i-1]).distanceTo(L.latLng(tempPath[i])); 
+                let d = 0; for(let i=1; i<tempPath.length; i++) d += L.latLng(tempPath[i-1][0], tempPath[i-1][1]).distanceTo(L.latLng(tempPath[i][0], tempPath[i][1])); 
                 document.getElementById('liveDist').innerText = `${(d/1000).toFixed(2)} km`; 
                 fetchElevation(tempPath, false); 
             }
@@ -740,47 +1192,61 @@
             if (walkHistory.length > 0) {
                 tempPath = walkHistory.pop();
                 tempPoly.setLatLngs(tempPath);
-                let d = 0; for(let i=1; i<tempPath.length; i++) d += L.latLng(tempPath[i-1]).distanceTo(L.latLng(tempPath[i])); 
+                let d = 0; for(let i=1; i<tempPath.length; i++) d += L.latLng(tempPath[i-1][0], tempPath[i-1][1]).distanceTo(L.latLng(tempPath[i][0], tempPath[i][1])); 
                 document.getElementById('liveDist').innerText = `${(d/1000).toFixed(2)} km`;
                 fetchElevation(tempPath, false);
             }
         };
 
-        document.getElementById('undoEditBtn').onclick = () => {
-            if (window.currentActiveLayer) {
-                let lls = window.currentActiveLayer.getLatLngs();
-                if (lls.length > 1) {
-                    lls.pop();
-                    window.currentActiveLayer.setLatLngs(lls);
-                    updateWalkStats();
-                    createNodes(window.currentActiveLayer);
-                    fetchElevation(lls.map(l => [l.lat, l.lng]), false);
+        function resetModal() { document.getElementById('itemName').value = ''; document.getElementById('itemDesc').value = ''; currentRating = 0; document.querySelectorAll('#modalStars .star').forEach(s => s.style.color = '#cbd5e1'); setupTypePickers(); }
+
+        document.getElementById('confirmSaveBtn').onclick = async () => {
+            const id = Date.now();
+            const name = document.getElementById('itemName').value || "Untitled";
+            const desc = document.getElementById('itemDesc').value || "";
+            const activityMode = document.querySelector('#addModeSelector .mode-btn.active').dataset.mode;
+            
+            let flat, flon, entry;
+
+            if (tempPath.length < 2) { 
+                flat = pendingCoords.lat; 
+                flon = pendingCoords.lng; 
+                entry = { id, name, desc, rating: currentRating, lat: flat, lng: flon, color: selectedColor, type: 'PIN' };
+                storage.pins.push(entry); 
+                addPin(entry);
+                await saveToCloud('pins', entry);
+            } else { 
+                let d = 0; 
+                for(let i=1; i<tempPath.length; i++) {
+                    d += L.latLng(tempPath[i-1][0], tempPath[i-1][1]).distanceTo(L.latLng(tempPath[i][0], tempPath[i][1]));
                 }
+                flat = tempPath[0][0]; 
+                flon = tempPath[0][1]; 
+                
+                const activeColor = ACTIVITY_COLORS[activityMode] || ACTIVITY_COLORS.walk;
+
+                entry = { 
+                    id, name, desc, rating: currentRating, 
+                    path: JSON.parse(JSON.stringify(tempPath)), dist: (d/1000).toFixed(2), 
+                    lat: flat, lng: flon, color: activeColor, 
+                    activity: activityMode, elevData: JSON.parse(JSON.stringify(liveElevData)), 
+                    recordedTime: finalRecordedTime,
+                    type: 'WALK'
+                }; 
+                storage.walks.push(entry); 
+                addWalk(entry); 
+                await saveToCloud('walks', entry);
             }
-        };
-
-        document.querySelectorAll('.mode-btn').forEach(btn => {
-            btn.onclick = (e) => {
-                const parent = btn.closest('.mode-selector');
-                parent.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                if(activeSelectionId) {
-                    const item = storage.walks.find(w => w.id === activeSelectionId);
-                    if(item) { item.activity = btn.dataset.mode; updateWalkStats(); }
-                }
-            };
-        });
-
-        function resetModal() { document.getElementById('itemName').value = ''; document.getElementById('itemDesc').value = ''; currentRating = 0; document.querySelectorAll('#modalStars .star').forEach(s => s.style.color = '#cbd5e1'); setupColorPickers(); }
-
-        const confirmSaveBtn = document.getElementById('confirmSaveBtn');
-        if (confirmSaveBtn) confirmSaveBtn.onclick = async () => {
-            const id = Date.now(), name = document.getElementById('itemName').value || "Untitled", desc = document.getElementById('itemDesc').value || "";
-            const activity = document.querySelector('#addModeSelector .mode-btn.active').dataset.mode;
-            let flat, flon;
-            if (currentMode === 'pin') { flat = pendingCoords.lat; flon = pendingCoords.lng; const p = { id, name, desc, rating: currentRating, lat: flat, lng: flon, color: selectedColor }; storage.pins.push(p); addPin(p); }
-            else { if (tempPath.length < 2) return; let d = 0; for(let i=1; i<tempPath.length; i++) d += L.latLng(tempPath[i-1]).distanceTo(L.latLng(tempPath[i])); flat = tempPath[0][0]; flon = tempPath[0][1]; const w = { id, name, desc, rating: currentRating, path: [...tempPath], dist: (d/1000).toFixed(2), lat: flat, lng: flon, color: selectedColor, activity: activity }; storage.walks.push(w); addWalk(w); }
-            saveData(); document.getElementById('modal-overlay').style.display = 'none'; goBack(); fetchPhoto(flat, flon, id);
+            
+            saveData(); 
+            document.getElementById('modal-overlay').style.display = 'none'; 
+            goBack(); 
+            fetchPhoto(flat, flon, id);
+            
+            tempPath = [];
+            tempPoly.setLatLngs([]);
+            liveElevData = [];
+            finalRecordedTime = 0;
         };
 
         async function fetchPhoto(lat, lon, id) {
@@ -790,7 +1256,15 @@
                     const title = res.query.geosearch[0].title;
                     const imgRes = await fetch(`https://en.wikipedia.org/w/api.php?action=query&prop=pageimages&format=json&piprop=original&titles=${encodeURIComponent(title)}&pithumbsize=500&origin=*`).then(r=>r.json());
                     const pg = Object.values(imgRes.query.pages)[0];
-                    if(pg.original) { let entry = storage.pins.find(x=>x.id===id) || storage.walks.find(x=>x.id===id); if(entry && !entry.photo) { entry.photo = pg.original.source; saveData(); updateHighlights(); } }
+                    if(pg.original) { 
+                        let entry = storage.pins.find(x=>x.id===id) || storage.walks.find(x=>x.id===id); 
+                        if(entry && !entry.photo) { 
+                            entry.photo = pg.original.source; 
+                            saveData(); 
+                            saveToCloud(entry.path ? 'walks' : 'pins', entry);
+                            updateHighlights(); 
+                        } 
+                    }
                 }
             } catch(e){}
         }
@@ -802,8 +1276,8 @@
         function showDetails(item, isWalk, layer) {
             if (!item) return;
             if (elevationAbortController) { elevationAbortController.abort(); elevationAbortController = null; }
-            activeSelectionId = item.id; isEditing = false; graphOpen = false; selectedColor = item.color || COLORS[0];
-            document.getElementById('editColorContainer').style.display = 'none'; document.getElementById('explore-panel').style.display = 'none'; document.getElementById('add-panel').style.display = 'none'; document.getElementById('settings-panel').style.display = 'none'; document.getElementById('mainTabs').style.display = 'none'; document.getElementById('mainSearch').style.display = 'none'; 
+            activeSelectionId = item.id; isEditing = false; graphOpen = false; selectedColor = item.color || PIN_TYPES[0].color;
+            document.getElementById('editTypeContainer').style.display = 'none'; document.getElementById('explore-panel').style.display = 'none'; document.getElementById('add-panel').style.display = 'none'; document.getElementById('settings-panel').style.display = 'none'; document.getElementById('mainTabs').style.display = 'none'; document.getElementById('mainSearch').style.display = 'none'; 
             document.getElementById('backBtn').style.display = 'flex'; document.getElementById('minimizeBtn').style.display = 'none';
             document.getElementById('detail-view').style.display = 'flex';
             document.getElementById('editWalkOptions').style.display = 'none';
@@ -814,9 +1288,10 @@
             document.getElementById('detPhoto').src = item.photo || "https://placehold.co/500x300?text=No+Photo";
             document.getElementById('editTitle').value = item.name; document.getElementById('editDesc').value = item.desc || "";
             document.querySelectorAll('.edit-input').forEach(i=>i.classList.remove('active'));
-            renderStars(item); waypointMarkers.forEach(m => map.removeLayer(m)); waypointMarkers = [];
+            renderStars(item); 
+            waypointMarkers.forEach(m => map.removeLayer(m)); waypointMarkers = [];
             if (isWalk) { 
-                window.currentActiveLayer = layer; 
+                window.currentActiveLayer = layer || mapItems.getLayers().find(l => l instanceof L.Polyline && JSON.stringify(l.getLatLngs()[0]) === JSON.stringify(L.latLng(item.path[0][0], item.path[0][1]))); 
                 updateWalkStats(); 
                 fetchElevation(item.path, false); 
                 updateWalkWaypoints(); 
@@ -826,18 +1301,29 @@
             resetSidebarScroll();
         }
 
-        function updateWalkWaypoints() { waypointMarkers.forEach(m => map.removeLayer(m)); waypointMarkers = []; const item = storage.walks.find(w => w.id === activeSelectionId); if(item && item.path.length > 0) { const startPt = item.path[0]; const endPt = item.path[item.path.length-1]; waypointMarkers.push(L.marker(startPt, { icon: L.divIcon({ className: 'walk-marker-icon start-icon', html: '▶', iconSize: [24, 24], iconAnchor: [12, 12] }), zIndexOffset: 2000 }).addTo(map)); waypointMarkers.push(L.marker(endPt, { icon: L.divIcon({ className: 'walk-marker-icon end-icon', html: '🏁', iconSize: [24, 24], iconAnchor: [12, 12] }), zIndexOffset: 2000 }).addTo(map)); } }
+        function updateWalkWaypoints() { 
+            waypointMarkers.forEach(m => map.removeLayer(m)); 
+            waypointMarkers = []; 
+            const item = storage.walks.find(w => w.id === activeSelectionId); 
+            if(item && item.path.length > 0) { 
+                const startPt = item.path[0]; 
+                const endPt = item.path[item.path.length-1]; 
+                waypointMarkers.push(L.marker(startPt, { icon: L.divIcon({ className: 'walk-marker-icon start-icon', html: '▶', iconSize: [24, 24], iconAnchor: [12, 12] }), zIndexOffset: 2000 }).addTo(map)); 
+                waypointMarkers.push(L.marker(endPt, { icon: L.divIcon({ className: 'walk-marker-icon end-icon', html: '🏁', iconSize: [24, 24], iconAnchor: [12, 12] }), zIndexOffset: 2000 }).addTo(map)); 
+            } 
+        }
         
         function toggleGraph() { 
-            const item = storage.walks.find(w => w.id === activeSelectionId); 
-            if (!item) return; 
             graphOpen = !graphOpen; 
             const btn = document.querySelector('.elev-toggle-btn'); 
             if(btn) btn.innerHTML = graphOpen ? '📉 Hide Height Graph' : '📈 Show Height Graph'; 
             if (graphOpen) { 
-                if(document.body.classList.contains('mobile-mode')) snapTo('bottom');
-                // Ensure data is rendered immediately if already exists
-                renderInstantGraph(item);
+                if(document.body.classList.contains('mobile-mode') && !isRecording) snapTo('bottom');
+                if(isRecording) renderLiveRecordingGraph();
+                else {
+                    const item = storage.walks.find(w => w.id === activeSelectionId); 
+                    if (item) renderInstantGraph(item);
+                }
             } else { closeElevation(); } 
         }
 
@@ -849,23 +1335,12 @@
             document.getElementById('elevation-dock').classList.add('active');
             let currentTotal = 0, distData = [0]; 
             for(let j = 1; j < item.path.length; j++){ 
-                currentTotal += L.latLng(item.path[j-1]).distanceTo(L.latLng(item.path[j])); 
+                currentTotal += L.latLng(item.path[j-1][0], item.path[j-1][1]).distanceTo(L.latLng(item.path[j][0], item.path[j][1])); 
                 distData.push(currentTotal / 1000); 
             }
             const ctx = document.getElementById('elevChart').getContext('2d'); 
             if(chartInstance) chartInstance.destroy();
             chartInstance = new Chart(ctx, { type:'line', data:{ labels: distData.map(d => d.toFixed(1)), datasets:[{ data:item.elevData, borderColor:'#2563eb', backgroundColor: 'rgba(37, 99, 235, 0.15)', fill:true, pointRadius:0, borderWidth: 2, tension:0.4, cubicInterpolationMode: 'monotone' }] }, options:{ maintainAspectRatio:false, plugins:{ legend:{display:false} }, scales:{ x:{ title:{display:true, text:'km'} }, y:{ title:{display:true, text:'m'}, position:'right' } } } });
-        }
-
-        function calculateEstimatedTime(distMeters, elevGain, elevLoss, activity) {
-            const speeds = { walk: 4.5, hike: 3.5, run: 9, cycle: 20 };
-            let baseKmh = speeds[activity] || 4.5;
-            let penaltyGain = (elevGain / 100) * 10; 
-            if(activity === 'cycle') penaltyGain = (elevGain / 100) * 4;
-            else if (activity === 'run') penaltyGain = (elevGain / 100) * 6;
-            let bonusLoss = (elevLoss / 100) * 1.5; 
-            if(activity === 'cycle') bonusLoss = (elevLoss / 100) * 5;
-            return Math.max(1, Math.round(((distMeters / 1000) / baseKmh * 60) + penaltyGain - bonusLoss));
         }
 
         function updateWalkStats() {
@@ -876,32 +1351,47 @@
                 minE = Math.round(Math.min(...item.elevData)); maxE = Math.round(Math.max(...item.elevData));
                 for(let i=1; i<item.elevData.length; i++) { let diff = item.elevData[i] - item.elevData[i-1]; if(diff > 0) ascent += diff; else descent += Math.abs(diff); }
             }
-            const totalMins = calculateEstimatedTime(d, ascent, descent, item.activity || 'walk');
+            
+            let totalMins = 0;
+            let timeLabel = "Estimated Time";
+            if (item.recordedTime && item.recordedTime > 0) {
+                totalMins = item.recordedTime;
+                timeLabel = "Actual Time";
+            } else {
+                let speed = 5;
+                if(item.activity === 'hike') speed = 4;
+                if(item.activity === 'run') speed = 10;
+                if(item.activity === 'cycle') speed = 20;
+                totalMins = Math.round((parseFloat(item.dist) / speed) * 60);
+            }
+
             let hours = Math.floor(totalMins / 60), mins = totalMins % 60;
-            document.getElementById('detStats').innerHTML = `<div class="stats-grid"><div class="stat-card"><span class="stat-label">Length</span><span class="stat-value">${item.dist} km</span></div><div class="stat-card"><span class="stat-label">Est. Time</span><span class="stat-value">${hours > 0 ? hours + 'h ' : ''}${mins}m</span></div><div class="stat-card-dual"><div class="dual-row"><span class="stat-sub-label">Total Climb</span><span class="stat-sub-value">${Math.round(ascent)}m</span></div><div class="dual-divider"></div><div class="dual-row"><span class="stat-sub-label">Total Descent</span><span class="stat-sub-value">${Math.round(descent)}m</span></div></div><div class="stat-card-dual"><div class="dual-row"><span class="stat-sub-label">Min Height</span><span class="stat-sub-value">${minE}m</span></div><div class="dual-divider"></div><div class="dual-row"><span class="stat-sub-label">Max Height</span><span class="stat-sub-value">${maxE}m</span></div></div><button class="elev-toggle-btn" onclick="toggleGraph()"><span>${graphOpen ? '📉' : '📈'}</span> ${graphOpen ? 'Hide Height Graph' : 'Show Height Graph'}</button></div>`;
+            document.getElementById('detStats').innerHTML = `<div class="stats-grid"><div class="stat-card"><span class="stat-label">Length</span><span class="stat-value">${item.dist} km</span></div><div class="stat-card"><span class="stat-label">${timeLabel}</span><span class="stat-value">${hours > 0 ? hours + 'h ' : ''}${mins}m</span></div><div class="stat-card-dual"><div class="dual-row"><span class="stat-sub-label">Total Climb</span><span class="stat-sub-value">${Math.round(ascent)}m</span></div><div class="dual-divider"></div><div class="dual-row"><span class="stat-sub-label">Total Descent</span><span class="stat-sub-value">${Math.round(descent)}m</span></div></div><div class="stat-card-dual"><div class="dual-row"><span class="stat-sub-label">Min Height</span><span class="stat-sub-value">${minE}m</span></div><div class="dual-divider"></div><div class="dual-row"><span class="stat-sub-label">Max Height</span><span class="stat-sub-value">${maxE}m</span></div></div><button class="elev-toggle-btn" onclick="toggleGraph()"><span>${graphOpen ? '📉' : '📈'}</span> ${graphOpen ? 'Hide Height Graph' : 'Show Height Graph'}</button></div>`;
             updateWalkWaypoints(); saveData();
+            saveToCloud('walks', item);
         }
 
-        function renderStars(item) { const rDiv = document.getElementById('detRating'); rDiv.innerHTML = ""; for(let i=1; i<=5; i++) { const s = document.createElement('span'); s.innerText = i <= item.rating ? '★' : '☆'; s.onclick = () => { if(isEditing) { item.rating = i; renderStars(item); saveData(); } }; rDiv.appendChild(s); } }
+        function renderStars(item) { const rDiv = document.getElementById('detRating'); rDiv.innerHTML = ""; for(let i=1; i<=5; i++) { const s = document.createElement('span'); s.innerText = i <= item.rating ? '★' : '☆'; s.onclick = () => { if(isEditing) { item.rating = i; renderStars(item); saveData(); saveToCloud(item.path ? 'walks' : 'pins', item); } }; rDiv.appendChild(s); } }
 
         function toggleEditingLogic() {
             isEditing = !isEditing; const editBtn = document.getElementById('floatEditBtn'); editBtn.innerHTML = isEditing ? '✅' : '🖋️'; editBtn.classList.toggle('is-editing', isEditing);
             document.getElementById('floatDeleteBtn').style.display = isEditing ? 'flex' : 'none'; 
             document.getElementById('floatUploadBtn').style.display = isEditing ? 'flex' : 'none'; 
-            document.getElementById('editColorContainer').style.display = isEditing ? 'block' : 'none';
+            
             const isWalk = storage.walks.some(w => w.id === activeSelectionId);
+            document.getElementById('editTypeContainer').style.display = (isEditing && !isWalk) ? 'block' : 'none';
             document.getElementById('editWalkOptions').style.display = (isEditing && isWalk) ? 'block' : 'none';
-            if(isEditing) { setupColorPickers(); walkHistory = []; }
+            
+            if(isEditing) { setupTypePickers(); walkHistory = []; }
             document.querySelectorAll('.edit-input').forEach(inp => inp.classList.toggle('active', isEditing));
             if(isEditing && window.currentActiveLayer instanceof L.Polyline) { createNodes(window.currentActiveLayer); } 
             else { nodeHandles.forEach(h=>map.removeLayer(h)); nodeHandles = []; }
             const item = storage.pins.find(p=>p.id===activeSelectionId) || storage.walks.find(w=>w.id===activeSelectionId);
-            document.getElementById('editTitle').oninput = () => { item.name = document.getElementById('editTitle').value; saveData(); updateHighlights(); };
-            document.getElementById('editDesc').oninput = () => { item.desc = document.getElementById('editDesc').value; saveData(); };
+            document.getElementById('editTitle').oninput = () => { item.name = document.getElementById('editTitle').value; saveData(); updateHighlights(); saveToCloud(item.path ? 'walks' : 'pins', item); };
+            document.getElementById('editDesc').oninput = () => { item.desc = document.getElementById('editDesc').value; saveData(); saveToCloud(item.path ? 'walks' : 'pins', item); };
         }
 
-        const floatEditBtn = document.getElementById('floatEditBtn');
-        if (floatEditBtn) floatEditBtn.onclick = toggleEditingLogic;
+        floatEditBtn.onclick = toggleEditingLogic;
 
         function createNodes(layer) {
             nodeHandles.forEach(h => map.removeLayer(h)); nodeHandles = []; const latlngs = layer.getLatLngs();
@@ -928,16 +1418,14 @@
             try {
                 let sampledPoints = [];
                 for (let i = 0; i < path.length - 1; i++) {
-                    const start = L.latLng(path[i]), end = L.latLng(path[i+1]), dist = start.distanceTo(end); sampledPoints.push(start);
+                    const start = L.latLng(path[i][0], path[i][1]), end = L.latLng(path[i+1][0], path[i+1][1]), dist = start.distanceTo(end); sampledPoints.push(start);
                     const numSteps = Math.floor(dist / 100); for (let j = 1; j <= numSteps; j++) { const ratio = (j * 100) / dist; sampledPoints.push(L.latLng(start.lat + (end.lat - start.lat) * ratio, start.lng + (end.lng - start.lng) * ratio)); }
                 }
-                sampledPoints.push(L.latLng(path[path.length - 1]));
+                sampledPoints.push(L.latLng(path[path.length - 1][0], path[path.length - 1][1]));
                 const res = await fetch('https://api.open-elevation.com/api/v1/lookup', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ locations: sampledPoints.map(p => ({ latitude: p.lat, longitude: p.lng })) }), signal: signal }).then(r=>r.json());
                 const elevs = res.results.map(r => r.elevation); 
-                
                 const item = storage.walks.find(w => w.id === activeSelectionId);
                 if (item) item.elevData = elevs; 
-                
                 if (graphOpen || forceOpen) {
                     let currentTotal = 0, distData = [0]; for(let i = 1; i < sampledPoints.length; i++){ currentTotal += sampledPoints[i-1].distanceTo(sampledPoints[i]); distData.push(currentTotal / 1000); }
                     document.getElementById('elevation-dock').classList.add('active');
@@ -948,21 +1436,35 @@
             } catch(e) { if (e.name !== 'AbortError') console.error(e); }
         }
 
-        const closeElevBtn = document.getElementById('closeElevBtn');
-        if (closeElevBtn) closeElevBtn.onclick = (e) => { L.DomEvent.stopPropagation(e); graphOpen = false; closeElevation(); updateWalkStats(); };
+        closeElevBtn.onclick = (e) => { L.DomEvent.stopPropagation(e); graphOpen = false; closeElevation(); if(activeSelectionId) updateWalkStats(); };
         function closeElevation() { document.getElementById('elevation-dock').classList.remove('active'); if(document.body.classList.contains('mobile-mode')) { document.getElementById('sidebar').classList.remove('hidden-sheet'); } if(chartInstance) { chartInstance.destroy(); chartInstance = null; } if (elevationAbortController) { elevationAbortController.abort(); elevationAbortController = null; } const btn = document.querySelector('.elev-toggle-btn'); if(btn) btn.innerHTML = '📈 Show Height Graph'; }
-        function saveData() { localStorage.setItem('geojournal_v11', JSON.stringify(storage)); }
-        function deleteAction() { if(confirm("Delete this entry?")){ storage.pins = storage.pins.filter(p => p.id !== activeSelectionId); storage.walks = storage.walks.filter(w => w.id !== activeSelectionId); saveData(); refreshMapItems(); goBack(); } }
-        const floatDeleteBtn = document.getElementById('floatDeleteBtn'); if (floatDeleteBtn) floatDeleteBtn.onclick = deleteAction;
-        const themeToggle = document.getElementById('themeToggle');
-        if (themeToggle) themeToggle.onchange = (e) => { const newTheme = e.target.checked ? 'dark' : 'light'; storage.theme = newTheme; document.body.classList.remove('light-theme', 'dark-theme'); document.body.classList.add(newTheme + '-theme'); saveData(); };
-        const mainSearch = document.getElementById('mainSearch');
-        if (mainSearch) mainSearch.onkeypress = (e) => { if(e.key==='Enter') fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${e.target.value}`).then(r=>r.json()).then(d=>d.length && map.flyTo([d[0].lat, d[0].lon], 15)); };
-        const modalStars = document.getElementById('modalStars');
-        if (modalStars) modalStars.onclick = (e) => { if(e.target.dataset.value) { currentRating = parseInt(e.target.dataset.value); document.querySelectorAll('#modalStars .star').forEach(s => s.style.color = s.dataset.value <= currentRating ? '#fbbf24' : '#cbd5e1'); } };
-        const finishWalkBtn = document.getElementById('finishWalkBtn');
-        if (finishWalkBtn) finishWalkBtn.onclick = () => { selectedColor = COLORS[0]; setupColorPickers(); resetModal(); document.getElementById('modal-overlay').style.display = 'flex'; };
-        refreshMapItems(); updateHighlights(); switchTab('explore');
+        
+        function saveData() { 
+            localStorage.setItem('geojournal_v11', JSON.stringify({ theme: storage.theme, mapStyle: storage.mapStyle, isMobile: storage.isMobile })); 
+        }
+        
+        async function deleteAction() { 
+            if(!activeSelectionId) return;
+            if(confirm("Delete this entry forever?")){ 
+                try {
+                    const isWalk = storage.walks.some(w => w.id === activeSelectionId);
+                    const collection = isWalk ? "walks" : "pins";
+                    await db.collection(collection).doc(activeSelectionId.toString()).delete();
+                    storage.pins = storage.pins.filter(p => p.id !== activeSelectionId); 
+                    storage.walks = storage.walks.filter(w => w.id !== activeSelectionId); 
+                    waypointMarkers.forEach(m => map.removeLayer(m)); waypointMarkers = [];
+                    refreshMapItems(); 
+                    goBack(); 
+                } catch (e) { alert("Delete failed: " + e.message); }
+            } 
+        }
+        
+        themeToggle.onchange = (e) => { const newTheme = e.target.checked ? 'dark' : 'light'; storage.theme = newTheme; document.body.classList.remove('light-theme', 'dark-theme'); document.body.classList.add(newTheme + '-theme'); saveData(); };
+        mainSearch.onkeypress = (e) => { if(e.key==='Enter') fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${e.target.value}`).then(r=>r.json()).then(d=>d.length && map.flyTo([d[0].lat, d[0].lon], 15)); };
+        modalStars.onclick = (e) => { if(e.target.dataset.value) { currentRating = parseInt(e.target.dataset.value); document.querySelectorAll('#modalStars .star').forEach(s => s.style.color = s.dataset.value <= currentRating ? '#fbbf24' : '#cbd5e1'); } };
+        
+        loadPermanentData();
+        switchTab('explore');
     </script>
 </body>
 </html>
