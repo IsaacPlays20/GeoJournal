@@ -438,8 +438,8 @@
         
         <div id="auth-overlay">
             <div class="modal" style="width: 300px; padding: 30px;">
-                <h2 style="text-align:center; margin-top:0;">GeoJournal</h2>
-                <p style="text-align:center; font-size:12px; opacity:0.7; margin-bottom:20px;">Sign in to view and create maps</p>
+                <h2 style="text-align:center; margin-top:0;">TraceLog</h2>
+                <p style="text-align:center; font-size:12px; opacity:0.7; margin-bottom:20px;">Sign in to view and create your log</p>
                 <input type="email" id="authEmail" class="modal-input" placeholder="Email Address" style="margin-bottom:10px;">
                 <input type="password" id="authPass" class="modal-input" placeholder="Password" style="margin-bottom:10px;">
                 <button class="btn btn-save-action" id="btnLogin" style="margin-bottom:10px;">Log In</button>
@@ -459,7 +459,7 @@
         <div id="dn-overlay" style="position: fixed; inset: 0; background: rgba(15, 23, 42, 0.9); display: none; align-items: center; justify-content: center; z-index: 10001; backdrop-filter: blur(5px);">
             <div class="modal">
                 <h3>Welcome!</h3>
-                <p style="text-align:center; opacity:0.7; font-size:13px; margin-bottom:15px;">Choose a unique display name for your GeoJournal.</p>
+                <p style="text-align:center; opacity:0.7; font-size:13px; margin-bottom:15px;">Choose a unique display name for your Log.</p>
                 <input type="text" id="newDisplayName" class="modal-input" placeholder="Display Name" style="margin-bottom:10px;">
                 <p id="dnError" style="color:var(--danger); font-size:12px; text-align:center; margin:0 0 10px 0; min-height:15px;"></p>
                 <button class="btn btn-save-action" id="saveDNBtn">Get Started</button>
@@ -516,7 +516,7 @@
             <div class="drag-handle" id="mobileDragHandle"></div>
             <div class="sidebar-header" id="mobileHeader">
                 <div class="logo-row">
-                    <h2 style="margin: 0; font-weight: 900; letter-spacing: -0.5px;">GeoJournal</h2>
+                    <h2 style="margin: 0; font-weight: 900; letter-spacing: -0.5px;">TraceLog</h2>
                     <div style="display: flex; gap: 8px;">
                         <button id="backBtn" class="icon-btn" onclick="goBack()">❮</button>
                         <button id="minimizeBtn" class="icon-btn" onclick="toggleSidebar()">✕</button>
@@ -539,7 +539,7 @@
                             <button class="filter-btn active" onclick="setSort('rating', this)" style="flex:1">⭐ RATING</button>
                             <button class="filter-btn" onclick="setSort('dist', this)" style="flex:1">📍 DISTANCE</button>
                         </div>
-                        <button class="filter-btn" onclick="toggleMineFilter(this)" style="width:100%; font-weight:800; justify-content:center;">👤 YOUR JOURNAL</button>
+                        <button class="filter-btn" onclick="toggleMineFilter(this)" style="width:100%; font-weight:800; justify-content:center;">👤 YOUR LOG</button>
 
                         <div class="filter-section">
                             <button class="toggle-btn-main" onclick="toggleFilterSection('pinGridReveal', this)" style="width:100%; justify-content: space-between; padding: 0 15px;"><span>📍 Pins</span> <span class="chevron" style="opacity:0.5; font-size:10px; transition:0.3s;">▼</span></button>
@@ -659,7 +659,7 @@
                         </div>
 
                         <div style="margin-top: 10px; border-top: 1px solid var(--border); padding-top: 15px;">
-                            <p id="versionLabel" style="font-size: 11px; opacity: 0.5; text-align: center; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">GeoJournal V18.3 Stable</p>
+                            <p id="versionLabel" style="font-size: 11px; opacity: 0.5; text-align: center; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">TraceLog V18.3 Stable</p>
                         </div>
                         <button class="btn" onclick="signOut()" style="margin-top:10px; background:var(--danger); color:white;">Sign Out</button>
                     </div>
@@ -1522,19 +1522,20 @@
                     iconChar = category ? category.icon : '📍';
                 }
 
-                const visibilityLabel = i.isPublic ? 
-                    `<span class="type-label" style="background:var(--accent); margin-left:5px;">PUBLIC</span>` : 
-                    `<span class="type-label" style="background:#64748b; margin-left:5px;">PRIVATE</span>`;
+                let visibilityLabel = '';
+                if (activeFilters.onlyMine) {
+                    visibilityLabel = i.isPublic ? 
+                        `<span class="type-label" style="background:#10b981;">PUBLIC</span>` : 
+                        `<span class="type-label" style="background:#ef4444;">PRIVATE</span>`;
+                }
 
                 let ratingHtml = '';
                 if (i.comments && i.comments.length > 0) {
                     ratingHtml = `<span style="color:#fbbf24; font-weight:800; margin-right:6px;">★ ${i.rating.toFixed(1)}</span>`;
                 }
-                const displayCreator = i.creatorName || (currentUser && i.userId === currentUser.uid ? currentUser.displayName : 'User');
-                const creatorHtml = `<span style="opacity:0.7; margin-right:6px;">by ${displayCreator}</span>`;
                 const distHtml = i.d ? `${formatDist(i.d)} away` : '';
 
-                div.innerHTML = `<img class="highlight-thumb" src="${i.photo || 'https://placehold.co/100x100?text=No+Photo'}"><div style="flex:1"><span class="type-label" style="background:${labelColor}">${iconChar} ${labelText}</span>${visibilityLabel}<p style="font-weight:bold;font-size:13px;margin:0;">${i.name}</p><div style="font-size:11px;color:var(--text);opacity:0.5;">${ratingHtml}${creatorHtml}${distHtml}</div></div>`;
+                div.innerHTML = `<img class="highlight-thumb" src="${i.photo || 'https://placehold.co/100x100?text=No+Photo'}"><div style="flex:1"><div style="display:flex; justify-content:space-between; margin-bottom:2px;"><span class="type-label" style="background:${labelColor}">${iconChar} ${labelText}</span>${visibilityLabel}</div><p style="font-weight:bold;font-size:13px;margin:0;">${i.name}</p><div style="font-size:11px;color:var(--text);opacity:0.5;">${ratingHtml}${distHtml}</div></div>`;
                 div.onclick = () => { 
                     const obj = i.type === 'PIN' ? storage.pins.find(p=>p.id===i.id) : storage.walks.find(w=>w.id===i.id); 
                     if(i.type === 'WALK' && obj.path) {
@@ -1542,10 +1543,10 @@
                         const sidePadding = document.body.classList.contains('mobile-mode') ? 20 : (parseInt(getComputedStyle(document.documentElement).getPropertyValue('--sidebar')) + 40);
                         const bottomPadding = document.body.classList.contains('mobile-mode') ? (window.innerHeight / 2) : 40;
                         map.flyToBounds(poly.getBounds(), { paddingBottomRight: [sidePadding, bottomPadding], paddingTopLeft: [20, 20], duration: 1.5 });
-                        map.once('moveend', () => showDetails(obj, true, null)); 
+                        showDetails(obj, true, null); 
                     } else { 
                         map.flyTo([i.lat, i.lng], 15);
-                        map.once('moveend', () => showDetails(obj, false, null));
+                        showDetails(obj, false, null);
                     }
                 };
                 list.appendChild(div);
@@ -1702,7 +1703,7 @@
                 const sidePadding = document.body.classList.contains('mobile-mode') ? 20 : (parseInt(getComputedStyle(document.documentElement).getPropertyValue('--sidebar')) + 40); 
                 const bottomPadding = document.body.classList.contains('mobile-mode') ? (window.innerHeight / 2) : 40; 
                 map.flyToBounds(e.target.getBounds(), { paddingBottomRight: [sidePadding, bottomPadding], paddingTopLeft: [20, 20], duration: 1.5 }); 
-                map.once('moveend', () => showDetails(w, true, e.target)); 
+                showDetails(w, true, e.target); 
             }); 
         }
         function refreshMapItems() { updateHighlights(); }
@@ -1734,8 +1735,11 @@
             document.querySelectorAll('.edit-input').forEach(i=>i.classList.remove('active'));
             
             const creatorDiv = document.getElementById('detCreator');
-            creatorDiv.innerText = item.creatorName ? `Uploaded by ${item.creatorName}` : '';
-            if(item.userId && !item.creatorName) {
+            let creatorName = item.creatorName;
+            if(currentUser && item.userId === currentUser.uid) creatorName = currentUser.displayName;
+            creatorDiv.innerText = creatorName ? `Uploaded by ${creatorName}` : '';
+
+            if(item.userId && !creatorName) {
                 db.collection('users').doc(item.userId).get().then(doc => {
                     if(doc.exists && doc.data().displayName) { item.creatorName = doc.data().displayName; creatorDiv.innerText = `Uploaded by ${item.creatorName}`; saveData(); }
                 }).catch(()=>{});
@@ -1800,7 +1804,8 @@
                     if(currentUser && c.userId === currentUser.uid) {
                         actions = `<div class="comment-actions"><button class="comment-action-btn" onclick="editComment(${item.id}, ${c.id})">Edit</button><button class="comment-action-btn" onclick="deleteComment(${item.id}, ${c.id})">Delete</button></div>`;
                     }
-                    html += `<div class="comment-item"><div class="comment-header"><span class="comment-user">${c.displayName || 'Anonymous'}</span><span class="comment-date">${date}</span></div><div class="comment-stars">${stars}</div><p class="comment-text">${c.text}</p>${actions}</div>`;
+                    const commName = (currentUser && c.userId === currentUser.uid) ? currentUser.displayName : (c.displayName || 'Anonymous');
+                    html += `<div class="comment-item"><div class="comment-header"><span class="comment-user">${commName}</span><span class="comment-date">${date}</span></div><div class="comment-stars">${stars}</div><p class="comment-text">${c.text}</p>${actions}</div>`;
                 });
             } else {
                 html += `<p style="font-size:12px; opacity:0.6; font-style:italic;">No reviews yet.</p>`;
@@ -2432,6 +2437,15 @@
             try { await currentUser.updateProfile({ displayName: name }); } catch(e) {}
 
             currentUser.displayName = name;
+            updateHighlights();
+            if(activeSelectionId) {
+                const item = storage.pins.find(p=>p.id===activeSelectionId) || storage.walks.find(w=>w.id===activeSelectionId);
+                if(item) { 
+                    renderComments(item); 
+                    if(item.userId === currentUser.uid) document.getElementById('detCreator').innerText = `Uploaded by ${name}`; 
+                }
+            }
+
             if(isInitial) {
                 document.getElementById('dn-overlay').style.display = 'none';
                 document.getElementById('settingsDisplayName').value = name;
