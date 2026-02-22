@@ -828,6 +828,7 @@
         let recordStartTime = null;
         let recordTimerInterval = null;
         let finalRecordedTime = 0;
+        let pauseStart = 0;
         let isFlying = false;
         let flyAnimationId = null;
         let flyMarker = null;
@@ -1430,8 +1431,8 @@
             isPaused = !isPaused;
             document.getElementById('hudPausePlay').innerText = isPaused ? '▶ RESUME' : '⏸ PAUSE';
             document.getElementById('hudPausePlay').style.background = isPaused ? 'var(--accent)' : 'rgba(255,255,255,0.2)';
-            if(isPaused) { this._pauseStart = Date.now(); } 
-            else { recordStartTime += (Date.now() - this._pauseStart); }
+            if(isPaused) { pauseStart = Date.now(); } 
+            else { recordStartTime += (Date.now() - pauseStart); }
         };
 
         document.getElementById('hudStop').onclick = () => {
@@ -2437,15 +2438,6 @@
             } else {
                 alert("Display Name Updated!");
             }
-        }
-
-        document.getElementById('saveDNBtn').onclick = () => saveDisplayName(true);
-        document.getElementById('updateDNBtn').onclick = () => saveDisplayName(false);
-
-        switchTab('explore');
-    </script>
-</body>
-</html>     }
         }
 
         document.getElementById('saveDNBtn').onclick = () => saveDisplayName(true);
