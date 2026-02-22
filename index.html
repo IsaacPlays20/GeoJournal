@@ -128,9 +128,9 @@
 
         #map { width: 100vw; height: 100vh; z-index: 1; }
 
-        .pin-wrapper { width: 30px; height: 30px; display: flex; justify-content: center; align-items: center; }
+        .pin-wrapper { width: 40px; height: 40px; display: flex; justify-content: center; align-items: center; }
         .pin-shape {
-            width: 14px; height: 14px; border-radius: 50% 50% 50% 0;
+            width: 20px; height: 20px; border-radius: 50% 50% 50% 0;
             transform: rotate(-45deg); border: 2px solid white;
             box-shadow: 0 0 0 1px rgba(0,0,0,0.2), 0 4px 8px rgba(0,0,0,0.3); z-index: 500;
         }
@@ -150,7 +150,17 @@
         .settings-row-refined { 
             display: flex; justify-content: space-between; align-items: center; 
             padding: 12px 16px; background: rgba(0,0,0,0.03); border-radius: 12px; border: 1px solid var(--border);
+            gap: 10px;
         }
+        .settings-header {
+            width: 100%; height: 40px; border: none; background: transparent;
+            color: var(--text); font-weight: 800; font-size: 12px; 
+            cursor: pointer; display: flex; align-items: center; justify-content: space-between; 
+            padding: 0 5px; transition: 0.2s; text-transform: uppercase;
+            border-bottom: 1px solid var(--border); margin-bottom: 10px; margin-top: 5px;
+        }
+        .settings-header:hover { opacity: 0.7; }
+        .settings-content { display: flex; flex-direction: column; gap: 8px; margin-bottom: 5px; }
         .settings-label { font-size: 13px; font-weight: 600; opacity: 0.9; }
 
         .switch { position: relative; display: inline-block; width: 42px; height: 24px; }
@@ -204,7 +214,7 @@
         .stat-sub-value { font-size: 12px; font-weight: 800; color: var(--text); }
 
         /* REWORKED FILTER STYLES */
-        .filter-container { margin-bottom: 20px; display: flex; flex-direction: column; gap: 12px; }
+        .filter-container { margin-bottom: 15px; display: flex; flex-direction: column; gap: 6px; }
         
         .filter-section { 
             display: flex; flex-direction: column; 
@@ -213,7 +223,7 @@
         }
 
         .toggle-btn-main { 
-            width: 100%; height: 50px; border: none; background: transparent;
+            width: 100%; height: 40px; border: none; background: transparent;
             color: var(--text); font-weight: 800; font-size: 12px; 
             cursor: pointer; display: flex; align-items: center; justify-content: space-between; 
             padding: 0 18px; transition: 0.2s; text-transform: uppercase;
@@ -250,6 +260,9 @@
         .highlight-item:hover { background: var(--border); transform: translateY(-2px); }
         .highlight-thumb { width: 48px; height: 48px; border-radius: 8px; object-fit: cover; background: #ddd; flex-shrink: 0; }
         .type-label { font-size: 9px; font-weight: 800; text-transform: uppercase; padding: 2px 5px; color: white; border-radius: 3px; display: inline-block; margin-bottom: 3px; }
+
+        .list-divider { height: 1px; background: var(--border); margin: 15px 0; width: 100%; opacity: 0.5; }
+        .filter-btn { height: 40px !important; }
 
         #detail-view { display: none; flex-direction: column; gap: 8px; }
         .edit-input { width: 100%; background: transparent; border: 1px solid transparent; border-radius: 6px; padding: 2px 5px; color: var(--text); font-family: inherit; box-sizing: border-box; }
@@ -385,13 +398,74 @@
         .leaflet-tile {
             outline: 1px solid transparent;
         }
+
+        #auth-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.3); backdrop-filter: blur(2px); z-index: 10000; display: flex; align-items: center; justify-content: center; flex-direction: column; }
+        
+        body.auth-active #sidebar, 
+        body.auth-active #expandBtn, 
+        body.auth-active .zoom-controls, 
+        body.auth-active #recording-popout, 
+        body.auth-active #flyoverControls, 
+        body.auth-active #elevation-dock,
+        body.auth-active #layer-popup { display: none !important; }
+        body.auth-active .gps-indicator-wrapper { display: none !important; }
+
+        .custom-pin-marker .pin-shape { transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .custom-pin-marker:hover .pin-shape { transform: rotate(-45deg) scale(1.3); }
+        .custom-pin-marker:hover { z-index: 10000 !important; }
+
+        .speed-input-group { display: flex; flex-direction: column; gap: 2px; }
+
+        .comments-section { margin-top: 15px; border-top: 1px solid var(--border); padding-top: 15px; }
+        .comment-item { background: rgba(0,0,0,0.02); border-radius: 8px; padding: 10px; margin-bottom: 8px; border: 1px solid var(--border); }
+        .comment-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+        .comment-user { font-size: 12px; font-weight: 700; }
+        .comment-date { font-size: 10px; opacity: 0.6; }
+        .comment-text { font-size: 13px; margin: 0; line-height: 1.4; }
+        .comment-stars { color: #fbbf24; font-size: 11px; letter-spacing: 1px; }
+        .new-comment-box { margin-top: 15px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 12px; }
+        .star-input { display: flex; gap: 5px; font-size: 24px; color: #cbd5e1; cursor: pointer; margin-bottom: 10px; }
+        .star-input span.active { color: #fbbf24; }
+        .comment-actions { display: flex; gap: 10px; margin-top: 5px; justify-content: flex-end; }
+        .comment-action-btn { background: none; border: none; font-size: 11px; cursor: pointer; opacity: 0.6; padding: 0; color: var(--text); }
+        .comment-action-btn:hover { opacity: 1; text-decoration: underline; }
     </style>
 </head>
-<body class="light-theme">
+<body class="light-theme auth-active">
 
     <div id="app">
         <button id="expandBtn" class="icon-btn" onclick="toggleSidebar()">☰</button>
         
+        <div id="auth-overlay">
+            <div class="modal" style="width: 300px; padding: 30px;">
+                <h2 style="text-align:center; margin-top:0;">GeoJournal</h2>
+                <p style="text-align:center; font-size:12px; opacity:0.7; margin-bottom:20px;">Sign in to view and create maps</p>
+                <input type="email" id="authEmail" class="modal-input" placeholder="Email Address" style="margin-bottom:10px;">
+                <input type="password" id="authPass" class="modal-input" placeholder="Password" style="margin-bottom:10px;">
+                <button class="btn btn-save-action" id="btnLogin" style="margin-bottom:10px;">Log In</button>
+                
+                <button class="btn" id="btnGoogle" style="margin-bottom:15px; background:white; color:#444; border:1px solid #ccc; display:flex; align-items:center; justify-content:center; gap:10px;">
+                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" style="width:18px;height:18px;">
+                    Sign in with Google
+                </button>
+                <div style="display:flex; gap:10px; width:100%;">
+                    <button class="btn" id="btnSignup" style="flex:1; height:34px; font-size:11px; background:transparent; border:1px solid var(--border);">Sign Up</button>
+                    <button class="btn" id="btnForgot" style="flex:1; height:34px; font-size:11px; background:transparent; border:1px solid var(--border);">Forgot Password?</button>
+                </div>
+                <p id="authMessage" style="color:var(--danger); text-align:center; font-size:12px; margin:0;"></p>
+            </div>
+        </div>
+
+        <div id="dn-overlay" style="position: fixed; inset: 0; background: rgba(15, 23, 42, 0.9); display: none; align-items: center; justify-content: center; z-index: 10001; backdrop-filter: blur(5px);">
+            <div class="modal">
+                <h3>Welcome!</h3>
+                <p style="text-align:center; opacity:0.7; font-size:13px; margin-bottom:15px;">Choose a unique display name for your GeoJournal.</p>
+                <input type="text" id="newDisplayName" class="modal-input" placeholder="Display Name" style="margin-bottom:10px;">
+                <p id="dnError" style="color:var(--danger); font-size:12px; text-align:center; margin:0 0 10px 0; min-height:15px;"></p>
+                <button class="btn btn-save-action" id="saveDNBtn">Get Started</button>
+            </div>
+        </div>
+
         <div id="flyoverControls">
             <div class="fly-stats-row" style="display:flex; justify-content:space-between; width:100%; margin-bottom:10px; font-size:11px; font-weight:800; color:var(--text); background:rgba(0,0,0,0.05); padding:8px; border-radius:10px; box-sizing: border-box;">
                 <span id="flyStatDist">0.00 km</span>
@@ -444,12 +518,11 @@
                 <div class="logo-row">
                     <h2 style="margin: 0; font-weight: 900; letter-spacing: -0.5px;">GeoJournal</h2>
                     <div style="display: flex; gap: 8px;">
-                        <button id="deviceToggle" class="icon-btn" onclick="toggleDeviceMode()" title="Toggle Mobile/PC Mode">📱</button>
                         <button id="backBtn" class="icon-btn" onclick="goBack()">❮</button>
                         <button id="minimizeBtn" class="icon-btn" onclick="toggleSidebar()">✕</button>
                     </div>
                 </div>
-                <input type="text" id="mainSearch" placeholder="🔍 Search City...">
+                <input type="text" id="mainSearch" placeholder="🔍 Search City, Pins, Activities...">
                 
                 <div class="tab-nav" id="mainTabs">
                     <button class="tab-btn active" id="exploreTab" onclick="switchTab('explore')">EXPLORE</button>
@@ -461,19 +534,21 @@
             <div class="sidebar-scroll-area" id="mainScrollArea">
                 <div id="explore-panel">
                     <div class="filter-container">
-                        <div class="filter-row" style="display:flex; gap:6px; margin-bottom: 5px;">
+                        <span class="settings-label" style="margin-left:2px; font-size:10px; opacity:0.6; text-transform:uppercase; letter-spacing:0.5px;">Sort By:</span>
+                        <div class="filter-row" style="display:flex; gap:6px;">
                             <button class="filter-btn active" onclick="setSort('rating', this)" style="flex:1">⭐ RATING</button>
                             <button class="filter-btn" onclick="setSort('dist', this)" style="flex:1">📍 DISTANCE</button>
                         </div>
+                        <button class="filter-btn" onclick="toggleMineFilter(this)" style="width:100%; font-weight:800; justify-content:center;">👤 YOUR JOURNAL</button>
 
                         <div class="filter-section">
-                            <button class="toggle-btn-main active" id="primaryTogglePins" onclick="togglePrimaryFilter('pins')" style="width:100%; justify-content: space-between; padding: 0 15px;"><span>📍 Pins</span> <span style="opacity:0.5; font-size:10px;">▼</span></button>
-                            <div class="filter-grid-reveal" id="pinGridReveal"></div>
+                            <button class="toggle-btn-main" onclick="toggleFilterSection('pinGridReveal', this)" style="width:100%; justify-content: space-between; padding: 0 15px;"><span>📍 Pins</span> <span class="chevron" style="opacity:0.5; font-size:10px; transition:0.3s;">▼</span></button>
+                            <div class="filter-grid-reveal" id="pinGridReveal" style="display:none;"></div>
                         </div>
 
                         <div class="filter-section">
-                            <button class="toggle-btn-main active" id="primaryToggleWalks" onclick="togglePrimaryFilter('activities')" style="width:100%; justify-content: space-between; padding: 0 15px;"><span>🏃 Activities</span> <span style="opacity:0.5; font-size:10px;">▼</span></button>
-                            <div class="filter-grid-reveal" id="activityGridReveal">
+                            <button class="toggle-btn-main" onclick="toggleFilterSection('activityGridReveal', this)" style="width:100%; justify-content: space-between; padding: 0 15px;"><span>🏃 Activities</span> <span class="chevron" style="opacity:0.5; font-size:10px; transition:0.3s;">▼</span></button>
+                            <div class="filter-grid-reveal" id="activityGridReveal" style="display:none;">
                                 <button class="sub-toggle-btn active" data-type="walk" onclick="toggleSubFilter(this, 'activity')"><span class="filter-icon">🚶</span>Walk</button>
                                 <button class="sub-toggle-btn active" data-type="hike" onclick="toggleSubFilter(this, 'activity')"><span class="filter-icon">🥾</span>Hike</button>
                                 <button class="sub-toggle-btn active" data-type="run" onclick="toggleSubFilter(this, 'activity')"><span class="filter-icon">⚡</span>Run</button>
@@ -481,6 +556,7 @@
                             </div>
                         </div>
                     </div>
+                    <div class="list-divider"></div>
                     
                     <div id="highlights-list"></div>
                     <div class="scroll-spacer"></div>
@@ -510,20 +586,82 @@
 
                     <div id="route-stats" style="display:none; background:rgba(0,0,0,0.05); padding:15px; border-radius:12px; margin-top: 5px;">
                         <p id="liveDist" style="margin:0; font-weight:800; font-size: 1.2rem; color: var(--primary);">0.00 km</p>
-                        <button class="btn btn-save-action" id="finishWalkBtn" style="margin-top:12px; width: 100%;">💾 Save Activity</button>
+                        <button class="btn" id="drawGraphBtn" onclick="toggleGraph()" style="margin-top:8px; background:rgba(0,0,0,0.05); border:1px solid var(--border); font-size:11px;">📈 Show Height Graph</button>
+                        <button class="btn btn-save-action" id="finishWalkBtn" style="margin-top:8px; width: 100%;">💾 Save Activity</button>
                     </div>
                     <div class="scroll-spacer"></div>
                 </div>
 
                 <div id="settings-panel" style="display:none;">
                     <div class="settings-container">
-                        <div class="settings-row-refined">
-                            <span class="settings-label">App Dark Mode</span>
-                            <label class="switch"><input type="checkbox" id="themeToggle"><span class="slider"></span></label>
+                        <button class="settings-header" onclick="toggleSettingsSection('genSettings', this)">
+                            <span>General</span> <span class="chevron">▼</span>
+                        </button>
+                        <div id="genSettings" class="settings-content">
+                            <div class="settings-row-refined" id="profileRow" style="display:none; flex-direction:column; align-items:flex-start; gap:4px;">
+                                <span class="settings-label">Logged in as</span>
+                                <span id="userEmailDisplay" style="font-size:12px; opacity:0.7; word-break:break-all;"></span>
+                                <div style="width:100%; margin-top:8px; padding-top:8px; border-top:1px solid var(--border);">
+                                    <span class="settings-label" style="font-size:11px;">Display Name</span>
+                                    <div style="display:flex; gap:5px; margin-top:4px;">
+                                        <input type="text" id="settingsDisplayName" class="modal-input" style="padding:6px; font-size:12px;" placeholder="Loading..."><button class="btn" id="updateDNBtn" style="width:auto; padding:0 10px; height:30px;">Save</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="settings-row-refined">
+                                <span class="settings-label">Map Style</span>
+                                <select id="settingsMapSelect" onchange="setMapLayer(this.value)" style="padding:4px; border-radius:6px; border:1px solid var(--border); background:var(--bg); color:var(--text); font-size:11px; max-width: 120px;">
+                                    <option value="voyager">Voyager</option>
+                                    <option value="dark">Dark</option>
+                                    <option value="sat">Satellite</option>
+                                    <option value="topo">Topography</option>
+                                    <option value="transit">Transport</option>
+                                </select>
+                            </div>
+                            <div class="settings-row-refined">
+                                <span class="settings-label">App Dark Mode</span>
+                                <label class="switch"><input type="checkbox" id="themeToggle"><span class="slider"></span></label>
+                            </div>
+                            <div class="settings-row-refined">
+                                <span class="settings-label">Interface Mode</span>
+                                <button class="btn" id="deviceToggleSettings" onclick="toggleDeviceMode()" style="width:auto; height:28px; font-size:11px; padding:0 10px; background:var(--bg); border:1px solid var(--border);">Switch Mode</button>
+                            </div>
                         </div>
+
+                        <button class="settings-header" onclick="toggleSettingsSection('prefSettings', this)">
+                            <span>Preferences</span> <span class="chevron" style="transform:rotate(-90deg)">▼</span>
+                        </button>
+                        <div id="prefSettings" class="settings-content" style="display:none;">
+                            <div class="settings-row-refined">
+                                <span class="settings-label">Units</span>
+                                <select id="unitSelect" onchange="changeUnits(this.value)" style="padding:4px; border-radius:6px; border:1px solid var(--border); background:var(--bg); color:var(--text); font-size:11px; max-width: 120px;">
+                                    <option value="metric">Metric (km, m)</option>
+                                    <option value="imperial">Imperial (mi, ft)</option>
+                                </select>
+                            </div>
+                            <div class="settings-row-refined" style="flex-direction:column; align-items:flex-start; gap:10px;">
+                                <span class="settings-label">Default Speeds (<span id="speedUnitLabel">km/h</span>)</span>
+                                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; width:100%;">
+                                    <div class="speed-input-group"><span style="font-size:10px;">Walk</span><input type="number" id="speedWalk" class="modal-input" style="padding:6px; font-size:12px;" onchange="saveSpeeds()"></div>
+                                    <div class="speed-input-group"><span style="font-size:10px;">Hike</span><input type="number" id="speedHike" class="modal-input" style="padding:6px; font-size:12px;" onchange="saveSpeeds()"></div>
+                                    <div class="speed-input-group"><span style="font-size:10px;">Run</span><input type="number" id="speedRun" class="modal-input" style="padding:6px; font-size:12px;" onchange="saveSpeeds()"></div>
+                                    <div class="speed-input-group"><span style="font-size:10px;">Cycle</span><input type="number" id="speedCycle" class="modal-input" style="padding:6px; font-size:12px;" onchange="saveSpeeds()"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button class="settings-header" onclick="toggleSettingsSection('accSettings', this)">
+                            <span>Account</span> <span class="chevron" style="transform:rotate(-90deg)">▼</span>
+                        </button>
+                        <div id="accSettings" class="settings-content" style="display:none;">
+                            <button class="btn" onclick="makeAllPrivate()" style="margin-top:5px; background:transparent; border:1px solid var(--border); color:var(--text); opacity:0.8; font-size:11px;">🔒 Make All Items Private</button>
+                            <button class="btn" onclick="deleteAccount()" style="margin-top:5px; background:transparent; border:1px solid var(--danger); color:var(--danger); font-size:11px;">⚠️ Delete Account</button>
+                        </div>
+
                         <div style="margin-top: 10px; border-top: 1px solid var(--border); padding-top: 15px;">
                             <p id="versionLabel" style="font-size: 11px; opacity: 0.5; text-align: center; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">GeoJournal V18.3 Stable</p>
                         </div>
+                        <button class="btn" onclick="signOut()" style="margin-top:10px; background:var(--danger); color:white;">Sign Out</button>
                     </div>
                     <div class="scroll-spacer"></div>
                 </div>
@@ -535,11 +673,12 @@
                         <button class="floating-action-btn btn-delete-float" id="floatDeleteBtn" onclick="deleteAction()" style="display:none;" title="Delete">🗑️</button>
                         <label class="floating-action-btn btn-upload-float" id="floatUploadBtn" for="photoInput" style="display:none;" title="Upload Photo">📷</label>
                         <input type="file" id="photoInput" accept="image/*" style="display:none;">
-                        <div id="detRating"></div>
+                        <div id="detRating" style="display:none;"></div>
                         <div class="image-scrim">
                             <textarea id="editTitle" class="edit-input" rows="2"></textarea>
                         </div>
                     </div>
+                    <div id="detCreator" style="font-size: 11px; opacity: 0.7; margin-bottom: 8px; padding: 0 5px; font-weight: 600;"></div>
 
                     <div id="editWalkOptions" style="display:none; margin: 10px 0; padding: 12px; background: rgba(37, 99, 235, 0.05); border-radius: 12px; border: 1px solid var(--primary);">
                         <div class="mode-selector" id="editModeSelector">
@@ -559,8 +698,15 @@
                         <span class="stat-label">Pin Category</span>
                         <div class="pin-type-grid" id="detailTypePicker"></div>
                     </div>
+                    <div id="editPrivacyContainer" style="display:none; margin-bottom: 10px; padding: 12px; background: rgba(0,0,0,0.03); border-radius: 12px; border: 1px solid var(--border);">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <span class="settings-label" style="text-transform:none; font-size:12px;">Publicly Visible</span>
+                            <label class="switch"><input type="checkbox" id="editPublicToggle"><span class="slider"></span></label>
+                        </div>
+                    </div>
                     <div id="detStats"></div>
                     <div class="info-card"><textarea id="editDesc" class="edit-input" rows="4" placeholder="No notes added..."></textarea></div>
+                    <div id="commentsSection" class="comments-section"></div>
                     <div class="scroll-spacer"></div>
                 </div>
             </div>
@@ -593,13 +739,14 @@
     <div id="modal-overlay">
         <div class="modal">
             <h3 id="modalTitle">Save Entry</h3>
-            <div id="modalStars" style="font-size: 2.2rem; color: #cbd5e1; cursor: pointer; display: flex; gap: 6px; margin-bottom: 10px; justify-content: center;">
-                <span class="star" data-value="1">★</span><span class="star" data-value="2">★</span><span class="star" data-value="3">★</span><span class="star" data-value="4">★</span><span class="star" data-value="5">★</span>
-            </div>
             <div class="modal-inputs">
                 <div id="pinTypeSelect" style="display:none;">
                    <span class="stat-label" style="text-align:center; display:block; margin-bottom:10px;">Select Pin Category</span>
                    <div class="pin-type-grid" id="modalTypePicker"></div>
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:0 5px;">
+                    <span class="settings-label" style="font-size:12px;">Make Public</span>
+                    <label class="switch"><input type="checkbox" id="publicToggle"><span class="slider"></span></label>
                 </div>
                 <input type="text" id="itemName" class="modal-input" placeholder="Location Name">
                 <textarea id="itemDesc" class="modal-input" placeholder="Notes..." style="height: 100px; resize: none;"></textarea>
@@ -613,6 +760,7 @@
 
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 
     <script>
         // --- 1. FIREBASE CONFIGURATION ---
@@ -629,6 +777,7 @@
 
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
+        const auth = firebase.auth();
 
         // Pin Categories
         const PIN_TYPES = [
@@ -638,7 +787,8 @@
             { name: 'Paid', color: '#8b5cf6', icon: '🎟️' },
             { name: 'Water', color: '#3b82f6', icon: '💧' },
             { name: 'Activity', color: '#eab308', icon: '⚽' },
-            { name: 'Event', color: '#ec4899', icon: '📅' }
+            { name: 'Event', color: '#ec4899', icon: '📅' },
+            { name: 'Tourist', color: '#06b6d4', icon: '📸' }
         ];
 
         // Activity Color Coding
@@ -650,8 +800,10 @@
         };
 
         let selectedColor = PIN_TYPES[0].color;
-        let storage = { pins: [], walks: [], theme: 'light', mapStyle: 'sat', isMobile: false };
-        let currentMode = 'explore', tempPath = [], pendingCoords = null, activeSelectionId = null, currentRating = 0, isEditing = false, graphOpen = false;
+        let storage = { pins: [], walks: [], theme: 'light', mapStyle: 'sat', isMobile: false, units: 'metric', speeds: { walk: 5, hike: 4, run: 10, cycle: 20 } };
+        let currentMode = 'explore', tempPath = [], pendingCoords = null, activeSelectionId = null, isEditing = false, graphOpen = false;
+        let editingCommentId = null;
+        let currentUser = null;
         
         // Reworked Filters Object
         let activeFilters = {
@@ -659,7 +811,9 @@
             showWalks: true,
             activities: ['walk', 'hike', 'run', 'cycle'],
             categories: PIN_TYPES.map(t => t.name),
-            sort: 'rating'
+            sort: 'rating',
+            onlyMine: false,
+            search: ''
         };
 
         let mapItems = new L.FeatureGroup(), userPos = null, userMarker = null, nodeHandles = [], waypointMarkers = [], chartInstance = null;
@@ -691,7 +845,7 @@
             document.getElementById('flyZoomDisplay').innerText = currentFlyZoom.toFixed(1);
         }
 
-        const map = L.map('map', { zoomControl: false, zoomSnap: 0.1 }).setView([51.505, -0.09], 13);
+        const map = L.map('map', { zoomControl: false, zoomSnap: 0.1 }).setView([51.505, -0.09], 3);
         mapItems.addTo(map);
 
         const mapStyles = { 
@@ -708,17 +862,40 @@
         // --- DATABASE SYNC FUNCTIONS ---
         async function loadPermanentData() {
             try {
-                const pinSnapshot = await db.collection("pins").get();
-                storage.pins = pinSnapshot.docs.map(doc => doc.data());
+                // Load Public Pins
+                const pubPins = await db.collection("pins").where("isPublic", "==", true).get();
+                // Load My Pins
+                let myPins = { docs: [] };
+                if (currentUser) {
+                    myPins = await db.collection("pins").where("userId", "==", currentUser.uid).get();
+                }
                 
-                const walkSnapshot = await db.collection("walks").get();
-                storage.walks = walkSnapshot.docs.map(doc => {
+                // Merge Pins (Map by ID to dedup)
+                const pinMap = new Map();
+                pubPins.docs.forEach(doc => pinMap.set(doc.id, doc.data()));
+                myPins.docs.forEach(doc => pinMap.set(doc.id, doc.data()));
+                storage.pins = Array.from(pinMap.values());
+                
+                // Load Public Walks
+                const pubWalks = await db.collection("walks").where("isPublic", "==", true).get();
+                // Load My Walks
+                let myWalks = { docs: [] };
+                if (currentUser) {
+                    myWalks = await db.collection("walks").where("userId", "==", currentUser.uid).get();
+                }
+
+                const walkMap = new Map();
+                const processWalk = (doc) => {
                     const d = doc.data();
                     if (d.path && d.path.length > 0 && typeof d.path[0] === 'object' && !Array.isArray(d.path[0])) {
                         d.path = d.path.map(p => [p.lat, p.lng]);
                     }
                     return d;
-                });
+                };
+                
+                pubWalks.docs.forEach(doc => walkMap.set(doc.id, processWalk(doc)));
+                myWalks.docs.forEach(doc => walkMap.set(doc.id, processWalk(doc)));
+                storage.walks = Array.from(walkMap.values());
                 
                 initFiltersUI();
                 refreshMapItems();
@@ -732,6 +909,19 @@
                 if (cleanData.path && cleanData.path.length > 0 && Array.isArray(cleanData.path[0])) {
                     cleanData.path = cleanData.path.map(p => ({ lat: p[0], lng: p[1] }));
                 }
+                if (!cleanData.userId) cleanData.userId = currentUser.uid;
+                
+                // Ensure creatorName is set
+                if (!cleanData.creatorName) {
+                    if (currentUser.displayName) cleanData.creatorName = currentUser.displayName;
+                    else {
+                        try {
+                            const uDoc = await db.collection('users').doc(currentUser.uid).get();
+                            if(uDoc.exists && uDoc.data().displayName) cleanData.creatorName = uDoc.data().displayName;
+                        } catch(e){}
+                    }
+                }
+
                 await db.collection(collection).doc(cleanData.id.toString()).set(cleanData);
             } catch (e) { console.error("Cloud save error:", e); }
         }
@@ -744,28 +934,53 @@
                 const btn = document.createElement('button');
                 btn.className = 'sub-toggle-btn active';
                 btn.dataset.cat = cat.name;
+                btn.dataset.color = cat.color;
+                btn.style.borderColor = cat.color;
+                btn.style.backgroundColor = cat.color;
+                btn.style.color = 'white';
                 btn.innerHTML = `<span class="filter-icon">${cat.icon}</span>${cat.name}`;
                 btn.onclick = () => toggleSubFilter(btn, 'category');
                 pinGrid.appendChild(btn);
             });
+
+            // Initialize Activity Buttons Colors
+            document.querySelectorAll('#activityGridReveal .sub-toggle-btn').forEach(btn => {
+                const type = btn.dataset.type;
+                const color = ACTIVITY_COLORS[type];
+                if(color) {
+                    btn.dataset.color = color;
+                    btn.style.borderColor = color;
+                    if(btn.classList.contains('active')) {
+                        btn.style.backgroundColor = color;
+                        btn.style.color = 'white';
+                    }
+                }
+            });
         }
 
-        function togglePrimaryFilter(type) {
-            if (type === 'pins') {
-                activeFilters.showPins = !activeFilters.showPins;
-                document.getElementById('primaryTogglePins').classList.toggle('active', activeFilters.showPins);
-                document.getElementById('pinGridReveal').style.display = activeFilters.showPins ? 'grid' : 'none';
-            } else {
-                activeFilters.showWalks = !activeFilters.showWalks;
-                document.getElementById('primaryToggleWalks').classList.toggle('active', activeFilters.showWalks);
-                document.getElementById('activityGridReveal').style.display = activeFilters.showWalks ? 'grid' : 'none';
-            }
-            updateHighlights();
+        function toggleFilterSection(id, btn) {
+            const el = document.getElementById(id);
+            const isHidden = el.style.display === 'none';
+            el.style.display = isHidden ? 'grid' : 'none';
+            btn.classList.toggle('active', isHidden);
+            const chevron = btn.querySelector('.chevron');
+            if(chevron) chevron.style.transform = isHidden ? 'rotate(180deg)' : 'rotate(0deg)';
         }
 
         function toggleSubFilter(btn, filterType) {
             btn.classList.toggle('active');
             const isActive = btn.classList.contains('active');
+            
+            const color = btn.dataset.color;
+            if (color) {
+                if (isActive) {
+                    btn.style.backgroundColor = color;
+                    btn.style.color = 'white';
+                } else {
+                    btn.style.backgroundColor = '';
+                    btn.style.color = '';
+                }
+            }
             
             if (filterType === 'activity') {
                 const val = btn.dataset.type;
@@ -777,6 +992,20 @@
                 else activeFilters.categories = activeFilters.categories.filter(c => c !== val);
             }
             updateHighlights();
+        }
+
+        function toggleMineFilter(btn) {
+            activeFilters.onlyMine = !activeFilters.onlyMine;
+            btn.classList.toggle('active', activeFilters.onlyMine);
+            updateHighlights();
+        }
+
+        function toggleSettingsSection(id, btn) {
+            const el = document.getElementById(id);
+            const isHidden = el.style.display === 'none';
+            el.style.display = isHidden ? 'flex' : 'none';
+            const chevron = btn.querySelector('.chevron');
+            if(chevron) chevron.style.transform = isHidden ? 'rotate(0deg)' : 'rotate(-90deg)';
         }
 
         function setSort(type, btn) {
@@ -792,11 +1021,61 @@
             storage.theme = localData.theme || 'light';
             storage.mapStyle = localData.mapStyle || 'sat';
             storage.isMobile = localData.isMobile || false;
+            storage.units = localData.units || 'metric';
+            storage.speeds = localData.speeds || { walk: 5, hike: 4, run: 10, cycle: 20 };
         }
 
         if (storage.isMobile) {
             document.body.classList.add('mobile-mode');
-            document.getElementById('deviceToggle').innerText = '🖥️';
+            document.getElementById('deviceToggleSettings').innerText = 'Switch to PC';
+        } else {
+            document.getElementById('deviceToggleSettings').innerText = 'Switch to Mobile';
+        }
+        
+        const mapSel = document.getElementById('settingsMapSelect');
+        if(mapSel) mapSel.value = storage.mapStyle;
+
+        const unitSel = document.getElementById('unitSelect');
+        if(unitSel) unitSel.value = storage.units;
+        updateSpeedInputs();
+
+        function changeUnits(val) {
+            storage.units = val;
+            saveData();
+            updateSpeedInputs();
+            updateHighlights();
+            if(activeSelectionId) {
+                const item = storage.walks.find(w => w.id === activeSelectionId);
+                if(item) updateWalkStats();
+            }
+        }
+
+        function updateSpeedInputs() {
+            const isImp = storage.units === 'imperial';
+            document.getElementById('speedUnitLabel').innerText = isImp ? 'mph' : 'km/h';
+            ['walk', 'hike', 'run', 'cycle'].forEach(type => {
+                const kmh = storage.speeds[type];
+                document.getElementById('speed' + type.charAt(0).toUpperCase() + type.slice(1)).value = isImp ? (kmh * 0.621371).toFixed(1) : kmh;
+            });
+        }
+
+        function saveSpeeds() {
+            const isImp = storage.units === 'imperial';
+            ['walk', 'hike', 'run', 'cycle'].forEach(type => {
+                let val = parseFloat(document.getElementById('speed' + type.charAt(0).toUpperCase() + type.slice(1)).value) || 0;
+                if(isImp) val = val / 0.621371;
+                storage.speeds[type] = val;
+            });
+            saveData();
+        }
+
+        function formatDist(km) {
+            if (storage.units === 'imperial') return (km * 0.621371).toFixed(2) + ' mi';
+            return parseFloat(km).toFixed(2) + ' km';
+        }
+        function formatElev(m) {
+            if (storage.units === 'imperial') return Math.round(m * 3.28084) + ' ft';
+            return Math.round(m) + ' m';
         }
 
         document.body.classList.add((storage.theme || 'light') + '-theme');
@@ -931,7 +1210,7 @@
                         tempPath.push([latlng.lat, latlng.lng]);
                         tempPoly.setLatLngs(tempPath);
                         let d = 0; for(let i=1; i<tempPath.length; i++) d += L.latLng(tempPath[i-1][0], tempPath[i-1][1]).distanceTo(L.latLng(tempPath[i][0], tempPath[i][1])); 
-                        document.getElementById('hudDist').innerText = `${(d/1000).toFixed(2)} km`;
+                        document.getElementById('hudDist').innerText = formatDist(d/1000);
                         fetchLivePointElevation(latlng.lat, latlng.lng);
                     }
                 }
@@ -946,8 +1225,8 @@
                     liveElevData.push(e);
                     const min = Math.round(Math.min(...liveElevData));
                     const max = Math.round(Math.max(...liveElevData));
-                    document.getElementById('hudMinHeight').innerText = `MIN: ${min}m`;
-                    document.getElementById('hudMaxHeight').innerText = `MAX: ${max}m`;
+                    document.getElementById('hudMinHeight').innerText = `MIN: ${formatElev(min)}`;
+                    document.getElementById('hudMaxHeight').innerText = `MAX: ${formatElev(max)}`;
                     if(graphOpen) renderLiveRecordingGraph();
                 }
             } catch(e){}
@@ -960,15 +1239,16 @@
                 currentTotal += L.latLng(tempPath[j-1][0], tempPath[j-1][1]).distanceTo(L.latLng(tempPath[j][0], tempPath[j][1])); 
                 distData.push(currentTotal / 1000); 
             }
+            const isImp = storage.units === 'imperial';
             const ctx = document.getElementById('elevChart').getContext('2d'); 
             if(chartInstance) chartInstance.destroy();
             chartInstance = new Chart(ctx, { 
                 type:'line', 
                 data:{ 
-                    labels: distData.map(d => d.toFixed(1)), 
-                    datasets:[{ data:liveElevData, borderColor:'#2563eb', backgroundColor: 'rgba(37, 99, 235, 0.15)', fill:true, pointRadius:0, borderWidth: 2, tension:0.4 }] 
+                    labels: distData.map(d => isImp ? (d * 0.621371).toFixed(1) : d.toFixed(1)), 
+                    datasets:[{ data: liveElevData.map(e => isImp ? e * 3.28084 : e), borderColor:'#2563eb', backgroundColor: 'rgba(37, 99, 235, 0.15)', fill:true, pointRadius:0, borderWidth: 2, tension:0.4 }] 
                 }, 
-                options:{ maintainAspectRatio:false, plugins:{ legend:{display:false} }, scales:{ x:{ title:{display:true, text:'km'} }, y:{ title:{display:true, text:'m'}, position:'right' } } } 
+                options:{ maintainAspectRatio:false, plugins:{ legend:{display:false} }, scales:{ x:{ title:{display:true, text: isImp ? 'mi' : 'km'} }, y:{ title:{display:true, text: isImp ? 'ft' : 'm'}, position:'right' } } } 
             });
         }
 
@@ -1002,7 +1282,15 @@
         }
 
         function toggleLayerMenu() { const menu = document.getElementById('layer-popup'); menu.style.display = menu.style.display === 'flex' ? 'none' : 'flex'; }
-        function setMapLayer(style) { storage.mapStyle = style; map.removeLayer(baseLayer); baseLayer = L.tileLayer(mapStyles[style], { maxZoom: 18 }).addTo(map); saveData(); document.getElementById('layer-popup').style.display = 'none'; }
+        function setMapLayer(style) { 
+            storage.mapStyle = style; 
+            map.removeLayer(baseLayer); 
+            baseLayer = L.tileLayer(mapStyles[style], { maxZoom: 18 }).addTo(map); 
+            saveData(); 
+            document.getElementById('layer-popup').style.display = 'none';
+            const sel = document.getElementById('settingsMapSelect');
+            if(sel) sel.value = style;
+        }
         function isUIPressed(e) { return e.originalEvent.target.closest('#sidebar') || e.originalEvent.target.closest('#elevation-dock') || e.originalEvent.target.closest('.zoom-controls') || e.originalEvent.target.closest('#layer-popup') || e.originalEvent.target.closest('#expandBtn') || e.originalEvent.target.closest('#recording-popout'); }
 
         const locateBtn = document.getElementById('locateBtn');
@@ -1194,6 +1482,24 @@
                 return true;
             });
 
+            if (activeFilters.onlyMine && currentUser) {
+                all = all.filter(i => i.userId === currentUser.uid);
+            }
+
+            if (activeFilters.search) {
+                const term = activeFilters.search.toLowerCase();
+                all = all.filter(i => i.name.toLowerCase().includes(term) || 
+                    (i.creatorName && i.creatorName.toLowerCase().includes(term)) ||
+                    (i.comments && i.comments.some(c => c.displayName && c.displayName.toLowerCase().includes(term))));
+            }
+
+            // Update Map to match filters
+            mapItems.clearLayers();
+            all.forEach(i => {
+                if (i.type === 'PIN') addPin(i);
+                else if (i.type === 'WALK') addWalk(i);
+            });
+
             if (userPos) all.forEach(i => i.d = L.latLng(i.lat, i.lng).distanceTo(userPos) / 1000);
             if (activeFilters.sort === 'rating') all.sort((a,b) => b.rating - a.rating); else all.sort((a,b) => (a.d || 0) - (b.d || 0));
             
@@ -1215,7 +1521,19 @@
                     iconChar = category ? category.icon : '📍';
                 }
 
-                div.innerHTML = `<img class="highlight-thumb" src="${i.photo || 'https://placehold.co/100x100?text=No+Photo'}"><div style="flex:1"><span class="type-label" style="background:${labelColor}">${iconChar} ${labelText}</span><p style="font-weight:bold;font-size:13px;margin:0;">${i.name}</p><div style="font-size:11px;color:#fbbf24;">${'★'.repeat(i.rating)} <span style="color:var(--text);opacity:0.5;">${i.d?i.d.toFixed(1)+'km':''}</span></div></div>`;
+                const visibilityLabel = i.isPublic ? 
+                    `<span class="type-label" style="background:var(--accent); margin-left:5px;">PUBLIC</span>` : 
+                    `<span class="type-label" style="background:#64748b; margin-left:5px;">PRIVATE</span>`;
+
+                let ratingHtml = '';
+                if (i.comments && i.comments.length > 0) {
+                    ratingHtml = `<span style="color:#fbbf24; font-weight:800; margin-right:6px;">★ ${i.rating.toFixed(1)}</span>`;
+                }
+                const displayCreator = i.creatorName || (currentUser && i.userId === currentUser.uid ? currentUser.displayName : 'User');
+                const creatorHtml = `<span style="opacity:0.7; margin-right:6px;">by ${displayCreator}</span>`;
+                const distHtml = i.d ? `${formatDist(i.d)} away` : '';
+
+                div.innerHTML = `<img class="highlight-thumb" src="${i.photo || 'https://placehold.co/100x100?text=No+Photo'}"><div style="flex:1"><span class="type-label" style="background:${labelColor}">${iconChar} ${labelText}</span>${visibilityLabel}<p style="font-weight:bold;font-size:13px;margin:0;">${i.name}</p><div style="font-size:11px;color:var(--text);opacity:0.5;">${ratingHtml}${creatorHtml}${distHtml}</div></div>`;
                 div.onclick = () => { 
                     const obj = i.type === 'PIN' ? storage.pins.find(p=>p.id===i.id) : storage.walks.find(w=>w.id===i.id); 
                     if(i.type === 'WALK' && obj.path) {
@@ -1262,7 +1580,6 @@
             }
             if (currentMode === 'pin') { 
                 pendingCoords = e.latlng; 
-                currentRating = 0; 
                 resetModal(); 
                 document.getElementById('pinTypeSelect').style.display = 'block';
                 document.getElementById('modal-overlay').style.display = 'flex'; 
@@ -1277,7 +1594,7 @@
                 } else { tempPath.push([e.latlng.lat, e.latlng.lng]); }
                 tempPoly.setLatLngs(tempPath); 
                 let d = 0; for(let i=1; i<tempPath.length; i++) d += L.latLng(tempPath[i-1][0], tempPath[i-1][1]).distanceTo(L.latLng(tempPath[i][0], tempPath[i][1])); 
-                document.getElementById('liveDist').innerText = `${(d/1000).toFixed(2)} km`; 
+                document.getElementById('liveDist').innerText = formatDist(d/1000); 
                 fetchElevation(tempPath, false); 
             }
         });
@@ -1287,25 +1604,27 @@
                 tempPath = walkHistory.pop();
                 tempPoly.setLatLngs(tempPath);
                 let d = 0; for(let i=1; i<tempPath.length; i++) d += L.latLng(tempPath[i-1][0], tempPath[i-1][1]).distanceTo(L.latLng(tempPath[i][0], tempPath[i][1])); 
-                document.getElementById('liveDist').innerText = `${(d/1000).toFixed(2)} km`;
+                document.getElementById('liveDist').innerText = formatDist(d/1000);
                 fetchElevation(tempPath, false);
             }
         };
 
-        function resetModal() { document.getElementById('itemName').value = ''; document.getElementById('itemDesc').value = ''; currentRating = 0; document.querySelectorAll('#modalStars .star').forEach(s => s.style.color = '#cbd5e1'); setupTypePickers(); }
+        function resetModal() { document.getElementById('itemName').value = ''; document.getElementById('itemDesc').value = ''; setupTypePickers(); }
 
         document.getElementById('confirmSaveBtn').onclick = async () => {
+            if (!currentUser) return;
             const id = Date.now();
             const name = document.getElementById('itemName').value || "Untitled";
             const desc = document.getElementById('itemDesc').value || "";
             const activityMode = document.querySelector('#addModeSelector .mode-btn.active').dataset.mode;
+            const isPublic = document.getElementById('publicToggle').checked;
             
             let flat, flon, entry;
 
             if (tempPath.length < 2) { 
                 flat = pendingCoords.lat; 
                 flon = pendingCoords.lng; 
-                entry = { id, name, desc, rating: currentRating, lat: flat, lng: flon, color: selectedColor, type: 'PIN' };
+                entry = { id, name, desc, rating: 0, lat: flat, lng: flon, color: selectedColor, type: 'PIN', userId: currentUser.uid, creatorName: currentUser.displayName || "User", isPublic: isPublic };
                 storage.pins.push(entry); 
                 addPin(entry);
                 await saveToCloud('pins', entry);
@@ -1320,12 +1639,15 @@
                 const activeColor = ACTIVITY_COLORS[activityMode] || ACTIVITY_COLORS.walk;
 
                 entry = { 
-                    id, name, desc, rating: currentRating, 
+                    id, name, desc, rating: 0, 
                     path: JSON.parse(JSON.stringify(tempPath)), dist: (d/1000).toFixed(2), 
                     lat: flat, lng: flon, color: activeColor, 
                     activity: activityMode, elevData: JSON.parse(JSON.stringify(liveElevData)), 
                     recordedTime: finalRecordedTime,
-                    type: 'WALK'
+                    type: 'WALK',
+                    userId: currentUser.uid,
+                    isPublic: isPublic,
+                    creatorName: currentUser.displayName || "User"
                 }; 
                 storage.walks.push(entry); 
                 addWalk(entry); 
@@ -1363,18 +1685,45 @@
             } catch(e){}
         }
 
-        function addPin(p) { const pinIcon = L.divIcon({ className: 'custom-pin-marker', html: `<div class="pin-wrapper"><div class="pin-shape" style="background:${p.color || '#2563eb'}"></div></div>`, iconSize: [30, 30], iconAnchor: [15, 30] }); L.marker([p.lat, p.lng], {icon: pinIcon, zIndexOffset: 1000}).addTo(mapItems).on('click', (e) => { L.DomEvent.stopPropagation(e); showDetails(p, false, e.target); }); }
-        function addWalk(w) { const poly = L.polyline(w.path, {color: w.color || '#2563eb', weight:5, zIndex: 500}).addTo(mapItems); poly.on('click', (e) => { L.DomEvent.stopPropagation(e); const sidePadding = document.body.classList.contains('mobile-mode') ? 20 : (parseInt(getComputedStyle(document.documentElement).getPropertyValue('--sidebar')) + 40); const bottomPadding = document.body.classList.contains('mobile-mode') ? (window.innerHeight / 2) : 40; map.flyToBounds(e.target.getBounds(), { paddingBottomRight: [sidePadding, bottomPadding], paddingTopLeft: [20, 20], duration: 1.5 }); map.once('moveend', () => showDetails(w, true, e.target)); }); }
-        function refreshMapItems() { mapItems.clearLayers(); storage.pins.forEach(addPin); storage.walks.forEach(addWalk); updateHighlights(); }
+        function addPin(p) { 
+            const pinIcon = L.divIcon({ className: 'custom-pin-marker', html: `<div class="pin-wrapper"><div class="pin-shape" style="background:${p.color || '#2563eb'}"></div></div>`, iconSize: [40, 40], iconAnchor: [20, 40] }); 
+            L.marker([p.lat, p.lng], {icon: pinIcon, zIndexOffset: 1000}).addTo(mapItems).on('click', (e) => { 
+                L.DomEvent.stopPropagation(e); 
+                showDetails(p, false, e.target); 
+            }); 
+        }
+        function addWalk(w) { 
+            const poly = L.polyline(w.path, {color: w.color || '#2563eb', weight:5, zIndex: 500}).addTo(mapItems); 
+            poly.on('mouseover', () => poly.setStyle({weight: 8}));
+            poly.on('mouseout', () => poly.setStyle({weight: 5}));
+            poly.on('click', (e) => { 
+                L.DomEvent.stopPropagation(e); 
+                const sidePadding = document.body.classList.contains('mobile-mode') ? 20 : (parseInt(getComputedStyle(document.documentElement).getPropertyValue('--sidebar')) + 40); 
+                const bottomPadding = document.body.classList.contains('mobile-mode') ? (window.innerHeight / 2) : 40; 
+                map.flyToBounds(e.target.getBounds(), { paddingBottomRight: [sidePadding, bottomPadding], paddingTopLeft: [20, 20], duration: 1.5 }); 
+                map.once('moveend', () => showDetails(w, true, e.target)); 
+            }); 
+        }
+        function refreshMapItems() { updateHighlights(); }
 
         function showDetails(item, isWalk, layer) {
             if (!item) return;
+            // Ensure we work with the original storage object, not a filtered copy
+            const realItem = storage.pins.find(p => p.id === item.id) || storage.walks.find(w => w.id === item.id);
+            if (realItem) item = realItem;
+
             if (elevationAbortController) { elevationAbortController.abort(); elevationAbortController = null; }
             activeSelectionId = item.id; isEditing = false; graphOpen = false; selectedColor = item.color || PIN_TYPES[0].color;
+            editingCommentId = null;
             document.getElementById('editTypeContainer').style.display = 'none'; document.getElementById('explore-panel').style.display = 'none'; document.getElementById('add-panel').style.display = 'none'; document.getElementById('settings-panel').style.display = 'none'; document.getElementById('mainTabs').style.display = 'none'; document.getElementById('mainSearch').style.display = 'none'; 
             document.getElementById('backBtn').style.display = 'flex'; document.getElementById('minimizeBtn').style.display = 'none';
             document.getElementById('detail-view').style.display = 'flex';
             document.getElementById('editWalkOptions').style.display = 'none';
+            
+            // Only allow edit/delete if owner
+            const isOwner = currentUser && item.userId === currentUser.uid;
+            document.getElementById('floatEditBtn').style.display = isOwner ? 'flex' : 'none';
+            
             if(isWalk) { document.querySelectorAll('#editModeSelector .mode-btn').forEach(btn => { btn.classList.toggle('active', btn.dataset.mode === (item.activity || 'walk')); }); }
             if(document.body.classList.contains('mobile-mode')) snapTo('half');
             const floatEdit = document.getElementById('floatEditBtn'); floatEdit.innerHTML = '🖋️'; floatEdit.classList.remove('is-editing');
@@ -1382,8 +1731,18 @@
             document.getElementById('detPhoto').src = item.photo || "https://placehold.co/500x300?text=No+Photo";
             document.getElementById('editTitle').value = item.name; document.getElementById('editDesc').value = item.desc || "";
             document.querySelectorAll('.edit-input').forEach(i=>i.classList.remove('active'));
-            renderStars(item); 
+            
+            const creatorDiv = document.getElementById('detCreator');
+            creatorDiv.innerText = item.creatorName ? `Uploaded by ${item.creatorName}` : '';
+            if(item.userId && !item.creatorName) {
+                db.collection('users').doc(item.userId).get().then(doc => {
+                    if(doc.exists && doc.data().displayName) { item.creatorName = doc.data().displayName; creatorDiv.innerText = `Uploaded by ${item.creatorName}`; saveData(); }
+                }).catch(()=>{});
+            }
+
             waypointMarkers.forEach(m => map.removeLayer(m)); waypointMarkers = [];
+            renderComments(item);
+            updateDetailRating(item);
             if (isWalk) { 
                 window.currentActiveLayer = layer || mapItems.getLayers().find(l => l instanceof L.Polyline && JSON.stringify(l.getLatLngs()[0]) === JSON.stringify(L.latLng(item.path[0][0], item.path[0][1]))); 
                 updateWalkStats(); 
@@ -1393,6 +1752,157 @@
             else { document.getElementById('detStats').innerHTML = ``; closeElevation(); window.currentActiveLayer = null; }
             nodeHandles.forEach(h=>map.removeLayer(h));
             resetSidebarScroll();
+        }
+
+        function updateDetailRating(item) {
+            const rDiv = document.getElementById('detRating');
+            if(!rDiv) return;
+            if (item.comments && item.comments.length > 0) {
+                rDiv.style.display = 'flex';
+                rDiv.innerHTML = `★ ${(item.rating || 0).toFixed(1)}`;
+            } else {
+                rDiv.style.display = 'none';
+            }
+        }
+
+        function renderComments(item) {
+            const container = document.getElementById('commentsSection');
+            if(!container) return;
+            
+            let html = "";
+
+            if(currentUser) {
+                const btnText = editingCommentId ? "Update Review" : "Post Review";
+                const cancelBtn = editingCommentId ? `<button class="btn" onclick="cancelEdit()" style="margin-top:5px; background:transparent; border:1px solid var(--border);">Cancel</button>` : '';
+                const title = editingCommentId ? 'Edit Review' : 'Rate & Review';
+                html += `<div class="new-comment-box" style="margin-top:0;"><span class="settings-label">${title}</span><div class="star-input" id="commentStarInput"><span data-v="1">★</span><span data-v="2">★</span><span data-v="3">★</span><span data-v="4">★</span><span data-v="5">★</span></div><textarea id="newCommentText" class="modal-input" rows="3" placeholder="Write a review..." style="margin-bottom:10px;"></textarea><button class="btn btn-save-action" onclick="postComment()">${btnText}</button>${cancelBtn}</div>`;
+            } else {
+                html += `<div style="padding:10px; background:rgba(0,0,0,0.05); border-radius:8px; text-align:center; font-size:12px;">Log in to leave a review.</div>`;
+            }
+            
+            const count = item.comments ? item.comments.length : 0;
+            html += `<div onclick="toggleReviewsList()" style="cursor:pointer; display:flex; justify-content:space-between; align-items:center; margin-top:15px; padding: 5px 0; border-bottom: 1px solid var(--border);">
+                <h4 style="margin:0; font-size:14px;">Reviews (${count})</h4>
+                <span id="reviewsChevron" style="font-size:10px; opacity:0.6; transform: rotate(-90deg); transition: 0.2s;">▼</span>
+            </div>`;
+
+            html += `<div id="reviewsListContainer" style="display:none; margin-top:10px;">`;
+            if(item.comments && item.comments.length > 0) {
+                item.comments.sort((a,b) => {
+                    if(currentUser && a.userId === currentUser.uid && b.userId !== currentUser.uid) return -1;
+                    if(currentUser && b.userId === currentUser.uid && a.userId !== currentUser.uid) return 1;
+                    return b.timestamp - a.timestamp;
+                }).forEach(c => {
+                    const date = new Date(c.timestamp).toLocaleDateString();
+                    const stars = '★'.repeat(c.rating) + '☆'.repeat(5 - c.rating);
+                    let actions = '';
+                    if(currentUser && c.userId === currentUser.uid) {
+                        actions = `<div class="comment-actions"><button class="comment-action-btn" onclick="editComment(${item.id}, ${c.id})">Edit</button><button class="comment-action-btn" onclick="deleteComment(${item.id}, ${c.id})">Delete</button></div>`;
+                    }
+                    html += `<div class="comment-item"><div class="comment-header"><span class="comment-user">${c.displayName || 'Anonymous'}</span><span class="comment-date">${date}</span></div><div class="comment-stars">${stars}</div><p class="comment-text">${c.text}</p>${actions}</div>`;
+                });
+            } else {
+                html += `<p style="font-size:12px; opacity:0.6; font-style:italic;">No reviews yet.</p>`;
+            }
+            html += `</div>`;
+
+            container.innerHTML = html;
+
+            if(currentUser) {
+                if(editingCommentId && item.comments) {
+                    const c = item.comments.find(x => x.id === editingCommentId);
+                    if(c) {
+                        document.getElementById('newCommentText').value = c.text;
+                        window.currentCommentRating = c.rating;
+                        const stars = document.querySelectorAll('#commentStarInput span');
+                        stars.forEach(st => st.classList.toggle('active', parseInt(st.dataset.v) <= c.rating));
+                    }
+                }
+
+                let selectedRating = 0;
+                const stars = document.querySelectorAll('#commentStarInput span');
+                stars.forEach(s => {
+                    s.onclick = () => {
+                        selectedRating = parseInt(s.dataset.v);
+                        stars.forEach(st => st.classList.toggle('active', parseInt(st.dataset.v) <= selectedRating));
+                        window.currentCommentRating = selectedRating;
+                    };
+                });
+            }
+        }
+
+        function toggleReviewsList() {
+            const list = document.getElementById('reviewsListContainer');
+            const chev = document.getElementById('reviewsChevron');
+            if(list && chev) {
+                const isHidden = list.style.display === 'none';
+                list.style.display = isHidden ? 'block' : 'none';
+                chev.style.transform = isHidden ? 'rotate(0deg)' : 'rotate(-90deg)';
+            }
+        }
+
+        async function postComment() {
+            if(!activeSelectionId || !currentUser) return;
+            
+            let currentDisplayName = currentUser.displayName;
+            try {
+                const uDoc = await db.collection('users').doc(currentUser.uid).get();
+                if(uDoc.exists && uDoc.data().displayName) currentDisplayName = uDoc.data().displayName;
+            } catch(e){}
+
+            const text = document.getElementById('newCommentText').value.trim();
+            const rating = window.currentCommentRating || 0;
+            if(rating === 0) { alert("Please select a star rating."); return; }
+            if(!text) { alert("Please write a review."); return; }
+
+            const item = storage.pins.find(p=>p.id===activeSelectionId) || storage.walks.find(w=>w.id===activeSelectionId);
+            if(!item) return;
+            if(!item.comments) item.comments = [];
+            
+            if(editingCommentId) {
+                const idx = item.comments.findIndex(c => c.id === editingCommentId);
+                if(idx !== -1) {
+                    item.comments[idx].text = text;
+                    item.comments[idx].rating = rating;
+                    item.comments[idx].timestamp = Date.now();
+                }
+                editingCommentId = null;
+            } else {
+                item.comments.push({ id: Date.now(), userId: currentUser.uid, displayName: currentDisplayName || "User", text: text, rating: rating, timestamp: Date.now() });
+            }
+            
+            const total = item.comments.reduce((acc, c) => acc + c.rating, 0);
+            item.rating = Math.round(total / item.comments.length);
+
+            saveData(); await saveToCloud(item.path ? 'walks' : 'pins', item);
+            renderComments(item); updateHighlights();
+            updateDetailRating(item);
+        }
+
+        function editComment(itemId, commentId) {
+            editingCommentId = commentId;
+            const item = storage.pins.find(p=>p.id===itemId) || storage.walks.find(w=>w.id===itemId);
+            renderComments(item);
+        }
+
+        function cancelEdit() {
+            editingCommentId = null;
+            const item = storage.pins.find(p=>p.id===activeSelectionId) || storage.walks.find(w=>w.id===activeSelectionId);
+            window.currentCommentRating = 0;
+            renderComments(item);
+        }
+
+        async function deleteComment(itemId, commentId) {
+            if(!confirm("Delete this review?")) return;
+            const item = storage.pins.find(p=>p.id===itemId) || storage.walks.find(w=>w.id===itemId);
+            item.comments = item.comments.filter(c => c.id !== commentId);
+            
+            const total = item.comments.reduce((acc, c) => acc + c.rating, 0);
+            item.rating = item.comments.length ? Math.round(total / item.comments.length) : 0;
+
+            saveData(); await saveToCloud(item.path ? 'walks' : 'pins', item);
+            renderComments(item); updateHighlights();
+            updateDetailRating(item);
         }
 
         function updateWalkWaypoints() { 
@@ -1409,12 +1919,14 @@
         
         function toggleGraph() { 
             graphOpen = !graphOpen; 
-            const btn = document.getElementById('toggleGraphBtn') || document.querySelector('.hud-btn.elev-toggle'); 
+            const btn = document.getElementById('toggleGraphBtn') || document.querySelector('.hud-btn.elev-toggle') || document.getElementById('drawGraphBtn'); 
             if(btn) btn.innerHTML = graphOpen ? '📉 Hide Height Graph' : '📈 Show Height Graph'; 
             if (graphOpen) { 
                 if(document.body.classList.contains('mobile-mode') && !isRecording) snapTo('bottom');
                 if(isRecording) renderLiveRecordingGraph();
-                else {
+                else if (currentMode === 'walk' && tempPath.length > 0) {
+                    fetchElevation(tempPath, true);
+                } else {
                     const item = storage.walks.find(w => w.id === activeSelectionId); 
                     if (item) renderInstantGraph(item);
                 }
@@ -1479,37 +1991,51 @@
                 totalMins = item.recordedTime;
                 timeLabel = "Actual Time";
             } else {
-                let speed = 5;
-                if(item.activity === 'hike') speed = 4;
-                if(item.activity === 'run') speed = 10;
-                if(item.activity === 'cycle') speed = 20;
+                let speed = storage.speeds[item.activity || 'walk'] || 5;
                 totalMins = Math.round((parseFloat(item.dist) / speed) * 60);
             }
 
             let hours = Math.floor(totalMins / 60), mins = totalMins % 60;            
-            document.getElementById('detStats').innerHTML = `<div class="stats-grid"><div class="stat-card"><span class="stat-label">Length</span><span class="stat-value">${item.dist} km</span></div><div class="stat-card"><span class="stat-label">${timeLabel}</span><span class="stat-value">${hours > 0 ? hours + 'h ' : ''}${mins}m</span></div><div class="stat-card-dual"><div class="dual-row"><span class="stat-sub-label">Total Climb</span><span class="stat-sub-value">${Math.round(ascent)}m</span></div><div class="dual-divider"></div><div class="dual-row"><span class="stat-sub-label">Total Descent</span><span class="stat-sub-value">${Math.round(descent)}m</span></div></div><div class="stat-card-dual"><div class="dual-row"><span class="stat-sub-label">Min Height</span><span class="stat-sub-value">${minE}m</span></div><div class="dual-divider"></div><div class="dual-row"><span class="stat-sub-label">Max Height</span><span class="stat-sub-value">${maxE}m</span></div></div><button class="elev-toggle-btn" onclick="startFlyover()" style="margin-bottom:5px;">✈️ Flyover</button><button id="toggleGraphBtn" class="elev-toggle-btn" onclick="toggleGraph()"><span>${graphOpen ? '📉' : '📈'}</span> ${graphOpen ? 'Hide Height Graph' : 'Show Height Graph'}</button></div>`;
+            document.getElementById('detStats').innerHTML = `<div class="stats-grid"><div class="stat-card"><span class="stat-label">Length</span><span class="stat-value">${formatDist(item.dist)}</span></div><div class="stat-card"><span class="stat-label">${timeLabel}</span><span class="stat-value">${hours > 0 ? hours + 'h ' : ''}${mins}m</span></div><div class="stat-card-dual"><div class="dual-row"><span class="stat-sub-label">Total Climb</span><span class="stat-sub-value">${formatElev(ascent)}</span></div><div class="dual-divider"></div><div class="dual-row"><span class="stat-sub-label">Total Descent</span><span class="stat-sub-value">${formatElev(descent)}</span></div></div><div class="stat-card-dual"><div class="dual-row"><span class="stat-sub-label">Min Height</span><span class="stat-sub-value">${formatElev(minE)}</span></div><div class="dual-divider"></div><div class="dual-row"><span class="stat-sub-label">Max Height</span><span class="stat-sub-value">${formatElev(maxE)}</span></div></div><button class="elev-toggle-btn" onclick="startFlyover()" style="margin-bottom:5px;">✈️ Flyover</button><button id="toggleGraphBtn" class="elev-toggle-btn" onclick="toggleGraph()"><span>${graphOpen ? '📉' : '📈'}</span> ${graphOpen ? 'Hide Height Graph' : 'Show Height Graph'}</button></div>`;
             updateWalkWaypoints(); saveData();
             saveToCloud('walks', item);
         }
 
-        function renderStars(item) { const rDiv = document.getElementById('detRating'); rDiv.innerHTML = ""; for(let i=1; i<=5; i++) { const s = document.createElement('span'); s.innerText = i <= item.rating ? '★' : '☆'; s.onclick = () => { if(isEditing) { item.rating = i; renderStars(item); saveData(); saveToCloud(item.path ? 'walks' : 'pins', item); } }; rDiv.appendChild(s); } }
-
         function toggleEditingLogic() {
+            const item = storage.pins.find(p=>p.id===activeSelectionId) || storage.walks.find(w=>w.id===activeSelectionId);
+            if (!item) return;
+
+            if (!currentUser || item.userId !== currentUser.uid) {
+                alert("You can only edit your own items.");
+                return;
+            }
+
             isEditing = !isEditing; const editBtn = document.getElementById('floatEditBtn'); editBtn.innerHTML = isEditing ? '✅' : '🖋️'; editBtn.classList.toggle('is-editing', isEditing);
             document.getElementById('floatDeleteBtn').style.display = isEditing ? 'flex' : 'none'; 
             document.getElementById('floatUploadBtn').style.display = isEditing ? 'flex' : 'none'; 
             
-            const isWalk = storage.walks.some(w => w.id === activeSelectionId);
+            const isWalk = (item.path !== undefined);
             document.getElementById('editTypeContainer').style.display = (isEditing && !isWalk) ? 'block' : 'none';
             document.getElementById('editWalkOptions').style.display = (isEditing && isWalk) ? 'block' : 'none';
+            document.getElementById('editPrivacyContainer').style.display = isEditing ? 'block' : 'none';
             
             if(isEditing) { setupTypePickers(); walkHistory = []; }
             document.querySelectorAll('.edit-input').forEach(inp => inp.classList.toggle('active', isEditing));
             if(isEditing && window.currentActiveLayer instanceof L.Polyline) { createNodes(window.currentActiveLayer); } 
             else { nodeHandles.forEach(h=>map.removeLayer(h)); nodeHandles = []; }
-            const item = storage.pins.find(p=>p.id===activeSelectionId) || storage.walks.find(w=>w.id===activeSelectionId);
             document.getElementById('editTitle').oninput = () => { item.name = document.getElementById('editTitle').value; saveData(); updateHighlights(); saveToCloud(item.path ? 'walks' : 'pins', item); };
             document.getElementById('editDesc').oninput = () => { item.desc = document.getElementById('editDesc').value; saveData(); saveToCloud(item.path ? 'walks' : 'pins', item); };
+            
+            if(isEditing) {
+                const pubToggle = document.getElementById('editPublicToggle');
+                pubToggle.checked = item.isPublic || false;
+                pubToggle.onchange = (e) => {
+                    item.isPublic = e.target.checked;
+                    saveData();
+                    saveToCloud(item.path ? 'walks' : 'pins', item);
+                    updateHighlights();
+                };
+            }
         }
 
         floatEditBtn.onclick = toggleEditingLogic;
@@ -1563,10 +2089,7 @@
             if(!graphOpen) toggleGraph();
 
             // Calculate speed for time estimation based on activity type
-            let speedKmH = 5;
-            if(item.activity === 'hike') speedKmH = 4;
-            if(item.activity === 'run') speedKmH = 10;
-            if(item.activity === 'cycle') speedKmH = 20;
+            let speedKmH = storage.speeds[item.activity || 'walk'] || 5;
             
             // Use actual average speed if it was a recorded activity
             if(item.recordedTime && item.recordedTime > 0 && parseFloat(item.dist) > 0) {
@@ -1614,7 +2137,7 @@
                 currentDist += moveDist;
 
                 // Update Stats
-                document.getElementById('flyStatDist').innerText = (currentDist / 1000).toFixed(2) + ' km';
+                document.getElementById('flyStatDist').innerText = formatDist(currentDist / 1000);
                 
                 // Estimated Time based on activity speed
                 const distKm = currentDist / 1000;
@@ -1630,7 +2153,7 @@
                 // Elevation
                 if (item.elevData && item.elevData.length > 0) {
                     const elevIndex = Math.min(item.elevData.length - 1, Math.floor((currentDist / totalDist) * item.elevData.length));
-                    document.getElementById('flyStatElev').innerText = Math.round(item.elevData[elevIndex]) + ' m';
+                    document.getElementById('flyStatElev').innerText = formatElev(item.elevData[elevIndex]);
                 }
 
                 window.flyoverDistance = currentDist / 1000;
@@ -1724,24 +2247,27 @@
                 const item = storage.walks.find(w => w.id === activeSelectionId);
                 if (item) item.elevData = elevs; 
                 if (graphOpen || forceOpen) {
+                    const isImp = storage.units === 'imperial';
                     let currentTotal = 0, distData = [0]; for(let i = 1; i < sampledPoints.length; i++){ currentTotal += sampledPoints[i-1].distanceTo(sampledPoints[i]); distData.push(currentTotal / 1000); }
                     document.getElementById('elevation-dock').classList.add('active');
                     const ctx = document.getElementById('elevChart').getContext('2d'); if(chartInstance) chartInstance.destroy();
-                    chartInstance = new Chart(ctx, { type:'line', data:{ labels: distData.map(d => d.toFixed(1)), datasets:[{ data:elevs, borderColor:'#2563eb', backgroundColor: 'rgba(37, 99, 235, 0.15)', fill:true, pointRadius:0, borderWidth: 2, tension:0.4, cubicInterpolationMode: 'monotone' }] }, options:{ maintainAspectRatio:false, plugins:{ legend:{display:false} }, scales:{ x:{ title:{display:true, text:'km'} }, y:{ title:{display:true, text:'m'}, position:'right' } } } });
+                    chartInstance = new Chart(ctx, { type:'line', data:{ labels: distData.map(d => isImp ? (d * 0.621371).toFixed(1) : d.toFixed(1)), datasets:[{ data: elevs.map(e => isImp ? e * 3.28084 : e), borderColor:'#2563eb', backgroundColor: 'rgba(37, 99, 235, 0.15)', fill:true, pointRadius:0, borderWidth: 2, tension:0.4, cubicInterpolationMode: 'monotone' }] }, options:{ maintainAspectRatio:false, plugins:{ legend:{display:false} }, scales:{ x:{ title:{display:true, text: isImp ? 'mi' : 'km'} }, y:{ title:{display:true, text: isImp ? 'ft' : 'm'}, position:'right' } } } });
                 }
                 if(item) updateWalkStats(); 
             } catch(e) { if (e.name !== 'AbortError') console.error(e); }
         }
 
         closeElevBtn.onclick = (e) => { L.DomEvent.stopPropagation(e); graphOpen = false; closeElevation(); if(activeSelectionId) updateWalkStats(); };
-        function closeElevation() { document.getElementById('elevation-dock').classList.remove('active'); if(document.body.classList.contains('mobile-mode')) { document.getElementById('sidebar').classList.remove('hidden-sheet'); } if(chartInstance) { chartInstance.destroy(); chartInstance = null; } if (elevationAbortController) { elevationAbortController.abort(); elevationAbortController = null; } const btn = document.getElementById('toggleGraphBtn') || document.querySelector('.hud-btn.elev-toggle'); if(btn) btn.innerHTML = '📈 Show Height Graph'; }
+        function closeElevation() { document.getElementById('elevation-dock').classList.remove('active'); if(document.body.classList.contains('mobile-mode')) { document.getElementById('sidebar').classList.remove('hidden-sheet'); } if(chartInstance) { chartInstance.destroy(); chartInstance = null; } if (elevationAbortController) { elevationAbortController.abort(); elevationAbortController = null; } const btn = document.getElementById('toggleGraphBtn') || document.querySelector('.hud-btn.elev-toggle') || document.getElementById('drawGraphBtn'); if(btn) btn.innerHTML = '📈 Show Height Graph'; }
         
         function saveData() { 
-            localStorage.setItem('geojournal_v11', JSON.stringify({ theme: storage.theme, mapStyle: storage.mapStyle, isMobile: storage.isMobile })); 
+            localStorage.setItem('geojournal_v11', JSON.stringify({ theme: storage.theme, mapStyle: storage.mapStyle, isMobile: storage.isMobile, units: storage.units, speeds: storage.speeds })); 
         }
         
         async function deleteAction() { 
             if(!activeSelectionId) return;
+            const item = storage.pins.find(p=>p.id===activeSelectionId) || storage.walks.find(w=>w.id===activeSelectionId);
+            if (item && item.userId !== currentUser.uid) { alert("You can only delete your own items."); return; }
             if(confirm("Delete this entry forever?")){ 
                 try {
                     const isWalk = storage.walks.some(w => w.id === activeSelectionId);
@@ -1756,12 +2282,179 @@
             } 
         }
         
+        async function makeAllPrivate() {
+            if(!currentUser) return;
+            if(!confirm("WARNING: This will make ALL your pins and activities private. They will no longer be visible to other users. This action cannot be easily undone. Continue?")) return;
+            
+            const myPins = storage.pins.filter(p => p.userId === currentUser.uid);
+            for(let p of myPins) {
+                p.isPublic = false;
+                await saveToCloud('pins', p);
+            }
+            
+            const myWalks = storage.walks.filter(w => w.userId === currentUser.uid);
+            for(let w of myWalks) {
+                w.isPublic = false;
+                await saveToCloud('walks', w);
+            }
+            
+            saveData();
+            updateHighlights();
+            alert("All items set to private.");
+        }
+
+        function deleteAccount() {
+            if(!currentUser) return;
+            if(confirm("DANGER: Are you sure you want to delete your account? This will permanently delete your login credentials. Your data may remain unless you delete it first. This action cannot be undone.")) {
+                currentUser.delete().then(() => {
+                    alert("Account deleted.");
+                    location.reload();
+                }).catch((error) => {
+                    alert("Error deleting account: " + error.message);
+                });
+            }
+        }
+
         themeToggle.onchange = (e) => { const newTheme = e.target.checked ? 'dark' : 'light'; storage.theme = newTheme; document.body.classList.remove('light-theme', 'dark-theme'); document.body.classList.add(newTheme + '-theme'); saveData(); };
-        mainSearch.onkeypress = (e) => { if(e.key==='Enter') fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${e.target.value}`).then(r=>r.json()).then(d=>d.length && map.flyTo([d[0].lat, d[0].lon], 15)); };
-        modalStars.onclick = (e) => { if(e.target.dataset.value) { currentRating = parseInt(e.target.dataset.value); document.querySelectorAll('#modalStars .star').forEach(s => s.style.color = s.dataset.value <= currentRating ? '#fbbf24' : '#cbd5e1'); } };
         
-        loadPermanentData();
+        mainSearch.addEventListener('input', (e) => { activeFilters.search = e.target.value; updateHighlights(); });
+        mainSearch.addEventListener('keypress', (e) => { if(e.key==='Enter') fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${e.target.value}`).then(r=>r.json()).then(d=>d.length && map.flyTo([d[0].lat, d[0].lon], 15)); });
+        
+        // AUTH LOGIC
+        document.getElementById('btnLogin').onclick = () => {
+            const email = document.getElementById('authEmail').value;
+            const pass = document.getElementById('authPass').value;
+            auth.signInWithEmailAndPassword(email, pass).catch(e => document.getElementById('authMessage').innerText = e.message);
+        };
+
+        document.getElementById('btnSignup').onclick = () => {
+            const email = document.getElementById('authEmail').value;
+            const pass = document.getElementById('authPass').value;
+            auth.createUserWithEmailAndPassword(email, pass)
+                .then(cred => {
+                    cred.user.sendEmailVerification();
+                    document.getElementById('authMessage').innerText = "Verification email sent! Please verify and log in.";
+                    auth.signOut();
+                })
+                .catch(e => document.getElementById('authMessage').innerText = e.message);
+        };
+
+        document.getElementById('btnGoogle').onclick = () => {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            auth.signInWithPopup(provider).catch(e => document.getElementById('authMessage').innerText = e.message);
+        };
+
+        document.getElementById('btnForgot').onclick = () => {
+            const email = document.getElementById('authEmail').value;
+            if(!email) {
+                document.getElementById('authMessage').innerText = "Please enter your email address first.";
+                return;
+            }
+            auth.sendPasswordResetEmail(email)
+                .then(() => {
+                    document.getElementById('authMessage').style.color = 'var(--accent)';
+                    document.getElementById('authMessage').innerText = "Reset link sent to email!";
+                })
+                .catch(e => {
+                    document.getElementById('authMessage').style.color = 'var(--danger)';
+                    document.getElementById('authMessage').innerText = e.message;
+                });
+        };
+
+        function signOut() { auth.signOut(); }
+
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                if (user.emailVerified) {
+                    currentUser = user;
+                    document.getElementById('userEmailDisplay').innerText = user.email;
+                    if (user.displayName) {
+                        document.getElementById('settingsDisplayName').value = user.displayName;
+                    }
+                    document.getElementById('profileRow').style.display = 'flex';
+                    document.getElementById('auth-overlay').style.display = 'none';
+                    document.body.classList.remove('auth-active');
+                    checkUserProfile(user);
+                    loadPermanentData();
+                } else {
+                    document.getElementById('authMessage').innerText = "Please verify your email address to continue.";
+                    auth.signOut();
+                }
+            } else {
+                currentUser = null;
+                document.getElementById('auth-overlay').style.display = 'flex';
+                document.body.classList.add('auth-active');
+                loadPermanentData();
+            }
+        });
+
+        async function checkUserProfile(user) {
+            try {
+                const userDoc = await db.collection('users').doc(user.uid).get();
+                if (userDoc.exists && userDoc.data().displayName) {
+                    currentUser.displayName = userDoc.data().displayName;
+                    document.getElementById('settingsDisplayName').value = currentUser.displayName;
+                    updateHighlights();
+                } else {
+                    document.getElementById('dn-overlay').style.display = 'flex';
+                }
+            } catch(e) { console.error("Profile check failed", e); }
+        }
+
+        async function saveDisplayName(isInitial) {
+            const inputId = isInitial ? 'newDisplayName' : 'settingsDisplayName';
+            const errId = isInitial ? 'dnError' : null;
+            const name = document.getElementById(inputId).value.trim();
+            
+            if(name.length < 3) {
+                if(errId) document.getElementById(errId).innerText = "Name must be at least 3 characters.";
+                else alert("Name must be at least 3 characters.");
+                return;
+            }
+
+            const snapshot = await db.collection('users').where('displayName', '==', name).get();
+            if(!snapshot.empty) {
+                const existing = snapshot.docs[0];
+                if(existing.id !== currentUser.uid) {
+                    if(errId) document.getElementById(errId).innerText = "This name is already taken.";
+                    else alert("This name is already taken.");
+                    return;
+                }
+            }
+
+            await db.collection('users').doc(currentUser.uid).set({
+                displayName: name,
+                email: currentUser.email,
+                lowerName: name.toLowerCase()
+            }, { merge: true });
+
+            try { await currentUser.updateProfile({ displayName: name }); } catch(e) {}
+
+            currentUser.displayName = name;
+            if(isInitial) {
+                document.getElementById('dn-overlay').style.display = 'none';
+                document.getElementById('settingsDisplayName').value = name;
+            } else {
+                alert("Display Name Updated!");
+            }
+        }
+
+        document.getElementById('saveDNBtn').onclick = () => saveDisplayName(true);
+        document.getElementById('updateDNBtn').onclick = () => saveDisplayName(false);
+
         switchTab('explore');
+    </script>
+</body>
+</html>     }
+        }
+
+        document.getElementById('saveDNBtn').onclick = () => saveDisplayName(true);
+        document.getElementById('updateDNBtn').onclick = () => saveDisplayName(false);
+
+        switchTab('explore');
+    </script>
+</body>
+</html>
     </script>
 </body>
 </html>
