@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GeoJournal v18.0 | GPS Record</title>
+    <title>TraceLog │ Map your journey</title>
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -42,7 +42,7 @@
             position: absolute; left: 0; top: 0; width: var(--sidebar); 
             background: var(--card); backdrop-filter: blur(10px);
             border-right: 1px solid var(--border); display: flex; 
-            flex-direction: column; z-index: 2000; height: 100vh; 
+            flex-direction: column; z-index: 4000; height: 100vh; 
             box-sizing: border-box; transition: transform var(--transition), opacity var(--transition), height var(--transition), top var(--transition);
             box-shadow: 10px 0 30px rgba(0,0,0,0.05);
         }
@@ -171,29 +171,30 @@
         input:checked + .slider:before { transform: translateX(18px); }
 
         .detail-header-container { position: relative; border-radius: 12px; overflow: hidden; margin-bottom: 12px; height: 180px; background: #ddd; flex-shrink: 0; }
-        #detPhoto { width: 100%; height: 100%; object-fit: cover; display: block; }
+        #detPhoto { width: 100%; height: 100%; object-fit: cover; display: block; transition: opacity 1s ease-in-out; position: absolute; inset: 0; z-index: 1; }
+        #detPhotoBack { width: 100%; height: 100%; object-fit: cover; display: block; position: absolute; inset: 0; z-index: 0; }
 
-        #detRating, .floating-action-btn { 
+        #detRating, .floating-action-btn, #detTypeOverlay { 
             position: absolute; background: rgba(15, 23, 42, 0.7); 
             backdrop-filter: blur(8px); padding: 6px 12px; border-radius: 8px;
             color: #fbbf24; font-size: 1rem; display: flex; gap: 3px; z-index: 10; border: 1px solid rgba(255,255,255,0.1);
             transition: 0.2s;
         }
+        
+        #detTypeOverlay { top: 12px; left: 12px; padding: 0; background: transparent; border: none; backdrop-filter: none; }
 
-        #detRating { top: 10px; right: 10px; }
-        .floating-action-btn { top: 10px; left: 10px; color: white; width: 34px; height: 34px; padding: 0; align-items: center; justify-content: center; cursor: pointer; background: rgba(15, 23, 42, 0.7); border-radius: 10px; }
+        #detRating { top: 54px; right: 12px; }
+        .floating-action-btn { top: 12px; right: 12px; left: auto; color: white; width: 34px; height: 34px; padding: 0; align-items: center; justify-content: center; cursor: pointer; background: rgba(15, 23, 42, 0.7); border-radius: 10px; }
         #floatEditBtn:hover, #floatEditBtn.is-editing { background: var(--primary); } 
-        .floating-action-btn.btn-delete-float { left: 52px; }
+        .floating-action-btn.btn-delete-float { right: 54px; left: auto; }
         .floating-action-btn.btn-delete-float:hover { background: var(--danger); }
         .btn-save-action { background: var(--border); color: var(--text); }
         .btn-save-action:hover { background: var(--accent) !important; color: white !important; }
-        .floating-action-btn.btn-upload-float { left: 94px; }
-        .floating-action-btn.btn-upload-float:hover { background: var(--accent); }
 
         .image-scrim { 
             position: absolute; bottom: 0; left: 0; right: 0; min-height: 40%; 
             background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 100%); 
-            display: flex; align-items: flex-end; padding: 10px 15px; pointer-events: none;
+            display: flex; align-items: flex-end; padding: 10px 15px; pointer-events: none; z-index: 20;
         }
 
         #editTitle { 
@@ -417,28 +418,68 @@
         .speed-input-group { display: flex; flex-direction: column; gap: 2px; }
 
         .comments-section { margin-top: 15px; border-top: 1px solid var(--border); padding-top: 15px; }
-        .comment-item { background: rgba(0,0,0,0.02); border-radius: 8px; padding: 10px; margin-bottom: 8px; border: 1px solid var(--border); }
-        .comment-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-        .comment-user { font-size: 12px; font-weight: 700; }
-        .comment-date { font-size: 10px; opacity: 0.6; }
-        .comment-text { font-size: 13px; margin: 0; line-height: 1.4; }
-        .comment-stars { color: #fbbf24; font-size: 11px; letter-spacing: 1px; }
+        .comment-item { 
+            background: var(--card); 
+            border-radius: 16px; 
+            padding: 16px; 
+            margin-bottom: 12px; 
+            border: 1px solid var(--border);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+        }
+        .comment-header { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+        .comment-avatar {
+            width: 36px; height: 36px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white; display: flex; align-items: center; justify-content: center;
+            font-weight: 800; font-size: 14px; text-transform: uppercase;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .comment-info { display: flex; flex-direction: column; gap: 2px; flex: 1; }
+        .comment-user { font-size: 13px; font-weight: 800; color: var(--text); }
+        .comment-date { font-size: 11px; opacity: 0.5; font-weight: 500; font-family: 'Inter', sans-serif; }
+        .comment-stars { color: #fbbf24; font-size: 14px; letter-spacing: 2px; margin-bottom: 8px; display: inline-block; }
+        .comment-text { font-size: 13px; margin: 0 0 10px 0; line-height: 1.5; opacity: 0.85; }
+        .comment-photos { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 5px; }
+        .comment-photo-thumb {
+            width: 70px; height: 70px; object-fit: cover; border-radius: 10px;
+            border: 1px solid var(--border); cursor: zoom-in; transition: transform 0.2s;
+            flex-shrink: 0;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.04);
+        }
+        .comment-photo-thumb:hover { transform: scale(1.05); }
         .new-comment-box { margin-top: 15px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 12px; }
         .star-input { display: flex; gap: 5px; font-size: 24px; color: #cbd5e1; cursor: pointer; margin-bottom: 10px; }
         .star-input span.active { color: #fbbf24; }
-        .comment-actions { display: flex; gap: 10px; margin-top: 5px; justify-content: flex-end; }
-        .comment-action-btn { background: none; border: none; font-size: 11px; cursor: pointer; opacity: 0.6; padding: 0; color: var(--text); }
-        .comment-action-btn:hover { opacity: 1; text-decoration: underline; }
+        .comment-actions { display: flex; gap: 8px; margin-top: 12px; justify-content: flex-start; border-top: 1px solid var(--border); padding-top: 12px; }
+        .comment-action-btn { 
+            background: var(--bg); border: 1px solid var(--border); font-size: 11px; cursor: pointer; 
+            padding: 6px 12px; color: var(--text); font-weight: 700; 
+            border-radius: 8px; transition: 0.2s;
+        }
+        .comment-action-btn:hover { background: var(--border); }
+        .comment-item { position: relative; }
+
+        #lightbox-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 10000;
+            display: none; align-items: center; justify-content: center; cursor: pointer;
+        }
+        #lightbox-img { max-width: 100%; max-height: 100%; object-fit: contain; }
+
+        .color-dot { width: 20px; height: 20px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: 0.2s; }
+        .color-dot.active { border-color: var(--text); transform: scale(1.2); box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        .emoji-option { font-size: 16px; cursor: pointer; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; border-radius: 6px; transition: 0.2s; background: rgba(0,0,0,0.05); border: 1px solid transparent; }
+        .emoji-option:hover { background: rgba(0,0,0,0.1); transform: scale(1.1); }
     </style>
 </head>
-<body class="light-theme auth-active">
+<body class="dark-theme auth-active">
 
     <div id="app">
         <button id="expandBtn" class="icon-btn" onclick="toggleSidebar()">☰</button>
         
         <div id="auth-overlay">
             <div class="modal" style="width: 300px; padding: 30px;">
-                <h2 style="text-align:center; margin-top:0;">TraceLog</h2>
+                <h1 style="text-align:center; margin-top:0; margin-bottom:1px">TraceLog</h1>
+                <p style="text-align:center; font-size:15px; margin-bottom:20px;">Map your journey</p>
                 <p style="text-align:center; font-size:12px; opacity:0.7; margin-bottom:20px;">Sign in to view and create your log</p>
                 <input type="email" id="authEmail" class="modal-input" placeholder="Email Address" style="margin-bottom:10px;">
                 <input type="password" id="authPass" class="modal-input" placeholder="Password" style="margin-bottom:10px;">
@@ -464,6 +505,13 @@
                 <p id="dnError" style="color:var(--danger); font-size:12px; text-align:center; margin:0 0 10px 0; min-height:15px;"></p>
                 <button class="btn btn-save-action" id="saveDNBtn">Get Started</button>
             </div>
+        </div>
+
+        <div id="lightbox-overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.95); z-index:10000; align-items:center; justify-content:center;">
+            <button class="icon-btn" onclick="closeLightbox()" style="position:absolute; top:20px; right:20px; z-index:10002; background:rgba(255,255,255,0.2); color:white; border:none;">✕</button>
+            <button class="icon-btn" onclick="changeLightboxImage(-1)" style="position:absolute; left:20px; top:50%; transform:translateY(-50%); z-index:10002; background:rgba(255,255,255,0.2); color:white; border:none;">❮</button>
+            <button class="icon-btn" onclick="changeLightboxImage(1)" style="position:absolute; right:20px; top:50%; transform:translateY(-50%); z-index:10002; background:rgba(255,255,255,0.2); color:white; border:none;">❯</button>
+            <img id="lightbox-img" src="" style="width:100%; height:100%; object-fit:contain;">
         </div>
 
         <div id="flyoverControls">
@@ -607,6 +655,17 @@
                                         <input type="text" id="settingsDisplayName" class="modal-input" style="padding:6px; font-size:12px;" placeholder="Loading..."><button class="btn" id="updateDNBtn" style="width:auto; padding:0 10px; height:30px;">Save</button>
                                     </div>
                                 </div>
+                                <div style="width:100%; margin-top:8px; padding-top:8px; border-top:1px solid var(--border); display:flex; flex-direction:column; gap:8px;">
+                                    <span class="settings-label" style="font-size:11px;">Avatar Style</span>
+                                    <div style="display:flex; align-items:center; gap:12px;">
+                                        <div id="settingsAvatarPreview" class="comment-avatar" style="width:48px; height:48px; font-size:18px; flex-shrink:0;"></div>
+                                        <div style="flex:1; display:flex; flex-direction:column; gap:8px;">
+                                            <input type="text" id="avatarTextInput" class="modal-input" maxlength="2" placeholder="Initials or Emoji" style="padding:6px; font-size:12px; width:100%;">
+                                            <div style="display:flex; gap:4px; flex-wrap:wrap;" id="profileEmojiPicker"></div>
+                                            <div style="display:flex; gap:6px; flex-wrap:wrap;" id="profileColorPicker"></div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <div class="settings-row-refined">
                                 <span class="settings-label">Map Style</span>
@@ -668,17 +727,19 @@
 
                 <div id="detail-view">
                     <div class="detail-header-container">
+                        <img id="detPhotoBack" src="">
                         <img id="detPhoto" src="">
+                        <div id="detTypeOverlay"></div>
                         <button class="floating-action-btn" id="floatEditBtn" title="Edit">🖋️</button>
                         <button class="floating-action-btn btn-delete-float" id="floatDeleteBtn" onclick="deleteAction()" style="display:none;" title="Delete">🗑️</button>
-                        <label class="floating-action-btn btn-upload-float" id="floatUploadBtn" for="photoInput" style="display:none;" title="Upload Photo">📷</label>
-                        <input type="file" id="photoInput" accept="image/*" style="display:none;">
                         <div id="detRating" style="display:none;"></div>
                         <div class="image-scrim">
                             <textarea id="editTitle" class="edit-input" rows="2"></textarea>
                         </div>
                     </div>
                     <div id="detCreator" style="font-size: 11px; opacity: 0.7; margin-bottom: 8px; padding: 0 5px; font-weight: 600;"></div>
+                    <button class="btn" id="editAddPhotoBtn" onclick="openUrlUploadPopup('edit')" style="display:none; margin-bottom:10px; background:var(--bg); border:1px solid var(--border); color:var(--text); font-weight:600;">📷 Add Photo URL</button>
+                    <div id="detTypeLabel" style="padding: 0 5px; margin-bottom: 10px;"></div>
 
                     <div id="editWalkOptions" style="display:none; margin: 10px 0; padding: 12px; background: rgba(37, 99, 235, 0.05); border-radius: 12px; border: 1px solid var(--primary);">
                         <div class="mode-selector" id="editModeSelector">
@@ -736,6 +797,24 @@
         <div id="map"></div>
     </div>
 
+    <div id="upload-popup" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:11000; align-items:center; justify-content:center; backdrop-filter:blur(5px);">
+        <div class="modal" style="width:300px; align-items:center; padding:20px;">
+            <h3 style="margin-top:0;">Add Photo URL</h3>
+            <input type="text" id="imgUrlInput" class="modal-input" placeholder="Paste image link here..." style="margin-bottom:10px; padding:8px;">
+            <div id="uploadPreviewContainer" style="width:100%; height:200px; background:#333; margin-bottom:15px; display:flex; align-items:center; justify-content:center; border-radius:8px; overflow:hidden;">
+                <img id="uploadPreview" style="max-width:100%; max-height:100%; object-fit:contain;">
+            </div>
+            <div id="uploadProgressContainer" style="width:100%; height:6px; background:#eee; border-radius:3px; margin-bottom:10px; display:none; overflow:hidden;">
+                <div id="uploadProgressBar" style="width:0%; height:100%; background:var(--primary); transition:width 0.2s;"></div>
+            </div>
+            <p id="uploadStatus" style="font-size:12px; opacity:0.7; margin-bottom:15px; text-align:center;">Previewing image...</p>
+            <div style="display:flex; gap:10px; width:100%;">
+                <button class="btn" onclick="cancelUpload()" style="flex:1; background:transparent; border:1px solid var(--border); color:var(--text);">Cancel</button>
+                <button class="btn btn-save-action" id="btnConfirmUpload" onclick="performUrlAdd()" style="flex:1;">Add Image</button>
+            </div>
+        </div>
+    </div>
+
     <div id="modal-overlay">
         <div class="modal">
             <h3 id="modalTitle">Save Entry</h3>
@@ -743,6 +822,10 @@
                 <div id="pinTypeSelect" style="display:none;">
                    <span class="stat-label" style="text-align:center; display:block; margin-bottom:10px;">Select Pin Category</span>
                    <div class="pin-type-grid" id="modalTypePicker"></div>
+                </div>
+                <div id="modalPhotoSection">
+                    <div id="modalPhotoList" style="display:flex; gap:5px; overflow-x:auto; margin-bottom:5px;"></div>
+                    <button class="btn" onclick="openUrlUploadPopup('create')" style="background:rgba(0,0,0,0.05); border:1px solid var(--border); font-size:11px; height:32px;">📷 Add Photo</button>
                 </div>
                 <div style="display:flex; justify-content:space-between; align-items:center; padding:0 5px;">
                     <span class="settings-label" style="font-size:12px;">Make Public</span>
@@ -758,9 +841,26 @@
         </div>
     </div>
 
+    <div id="review-modal-overlay" style="display:none; position:fixed; inset:0; background:rgba(15, 23, 42, 0.7); align-items:center; justify-content:center; z-index:9999; backdrop-filter:blur(4px);">
+        <div class="modal">
+            <h3 id="reviewModalTitle">Rate & Review</h3>
+            <div class="star-input" id="modalReviewStars" style="justify-content:center; margin-bottom:15px;">
+                <span data-v="1">★</span><span data-v="2">★</span><span data-v="3">★</span><span data-v="4">★</span><span data-v="5">★</span>
+            </div>
+            <textarea id="modalReviewText" class="modal-input" rows="4" placeholder="Share your experience (optional)..." style="margin-bottom:10px;"></textarea>
+            <div id="modalReviewPhotoPreview" style="display:flex; gap:5px; overflow-x:auto; margin-bottom:10px;"></div>
+            <button class="btn" onclick="openUrlUploadPopup('review')" style="margin-bottom:15px; background:rgba(0,0,0,0.05); border:1px solid var(--border); font-size:13px; height:42px; font-weight:600;">📷 Add Photo</button>
+            <div class="modal-btns">
+                <button class="btn btn-save-action" onclick="postComment()" id="postReviewBtn">Post Review</button>
+                <button class="btn" onclick="closeReviewModal()" style="background:transparent; border:1px solid var(--border); color:var(--text);">Cancel</button>
+            </div>
+        </div>
+    </div>
+
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
 
     <script>
         // --- 1. FIREBASE CONFIGURATION ---
@@ -778,6 +878,7 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
         const auth = firebase.auth();
+        const storageService = firebase.storage();
 
         // Pin Categories
         const PIN_TYPES = [
@@ -791,6 +892,27 @@
             { name: 'Tourist', color: '#06b6d4', icon: '📸' }
         ];
 
+        const AVATAR_COLORS = [
+            'linear-gradient(135deg, #2563eb, #06b6d4)', 
+            'linear-gradient(135deg, #10b981, #3b82f6)', 
+            'linear-gradient(135deg, #ef4444, #f59e0b)', 
+            'linear-gradient(135deg, #8b5cf6, #ec4899)', 
+            'linear-gradient(135deg, #ec4899, #f43f5e)', 
+            'linear-gradient(135deg, #06b6d4, #10b981)', 
+            'linear-gradient(135deg, #6366f1, #8b5cf6)', 
+            'linear-gradient(135deg, #64748b, #94a3b8)',
+            'linear-gradient(135deg, #f97316, #facc15)',
+            'linear-gradient(135deg, #14b8a6, #0ea5e9)',
+            'linear-gradient(135deg, #84cc16, #10b981)',
+            'linear-gradient(135deg, #a855f7, #d946ef)',
+            'linear-gradient(135deg, #3b82f6, #1d4ed8)',
+            'linear-gradient(135deg, #f43f5e, #be123c)',
+            'linear-gradient(135deg, #475569, #1e293b)',
+            'linear-gradient(135deg, #78716c, #44403c)'
+        ];
+
+        const AVATAR_EMOJIS = ['👤', '🙂', '🌟', '🚀', '🐱', '🐶', '🦊', '🐼', '🐸', '🌸', '🔥', '💎', '🚲', '🏃', '⛺', '📸'];
+
         // Activity Color Coding
         const ACTIVITY_COLORS = {
             walk: '#10b981', 
@@ -800,10 +922,17 @@
         };
 
         let selectedColor = PIN_TYPES[0].color;
-        let storage = { pins: [], walks: [], theme: 'light', mapStyle: 'sat', isMobile: false, units: 'metric', speeds: { walk: 5, hike: 4, run: 10, cycle: 20 } };
+        let storage = { pins: [], walks: [], theme: 'dark', mapStyle: 'sat', isMobile: false, units: 'metric', speeds: { walk: 5, hike: 4, run: 10, cycle: 20 } };
         let currentMode = 'explore', tempPath = [], pendingCoords = null, activeSelectionId = null, isEditing = false, graphOpen = false;
         let editingCommentId = null;
         let currentUser = null;
+        let slideshowInterval = null;
+        let currentPhotoIndex = 0;
+        let activeLightboxPhotos = [];
+        let currentLightboxIndex = 0;
+        let tempCreationPhotos = [];
+        let tempReviewPhotos = [];
+        let uploadContext = 'edit';
         
         // Reworked Filters Object
         let activeFilters = {
@@ -1019,7 +1148,7 @@
         // Device / Theme setup
         if (localStorage.getItem('geojournal_v11')) {
             const localData = JSON.parse(localStorage.getItem('geojournal_v11'));
-            storage.theme = localData.theme || 'light';
+            storage.theme = localData.theme || 'dark';
             storage.mapStyle = localData.mapStyle || 'sat';
             storage.isMobile = localData.isMobile || false;
             storage.units = localData.units || 'metric';
@@ -1079,7 +1208,9 @@
             return Math.round(m) + ' m';
         }
 
-        document.body.classList.add((storage.theme || 'light') + '-theme');
+        const theme = storage.theme || 'dark';
+        document.body.classList.remove('light-theme', 'dark-theme');
+        document.body.classList.add(theme + '-theme');
         document.getElementById('themeToggle').checked = (storage.theme === 'dark');
 
         function toggleDeviceMode() {
@@ -1115,6 +1246,7 @@
                         if (window.currentActiveLayer) {
                             window.currentActiveLayer.setStyle({color: selectedColor});
                         }
+                        renderTypeLabel(walk);
                         updateWalkStats();
                     }
                 }
@@ -1253,6 +1385,50 @@
             });
         }
 
+        function renderTypeLabel(item) {
+            const typeLabelDiv = document.getElementById('detTypeLabel');
+            const typeOverlay = document.getElementById('detTypeOverlay');
+            if (!typeLabelDiv) return;
+            
+            let typeText = '', typeColor = item.color || '#2563eb', typeIcon = '📍';
+            if (item.path || item.type === 'WALK') {
+                const act = item.activity || 'walk';
+                typeText = act.toUpperCase();
+                typeColor = ACTIVITY_COLORS[act] || '#2563eb';
+                typeIcon = act === 'cycle' ? '🚲' : (act === 'run' ? '⚡' : (act === 'hike' ? '🥾' : '🚶'));
+            } else {
+                const cat = PIN_TYPES.find(t => t.color === item.color);
+                typeText = cat ? cat.name.toUpperCase() : 'PIN';
+                typeIcon = cat ? cat.icon : '📍';
+            }
+            
+            let lat = item.lat;
+            let lng = item.lng;
+            if ((!lat || !lng) && item.path && item.path.length > 0) {
+                lat = item.path[0][0];
+                lng = item.path[0][1];
+            }
+            
+            let distText = '';
+            if (userPos && lat && lng) {
+                const d = userPos.distanceTo(L.latLng(lat, lng)) / 1000;
+                distText = ` • ${formatDist(d)} away`;
+            }
+
+            const navUrl = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
+            
+            if(typeOverlay) {
+                typeOverlay.innerHTML = `<span class="type-label" style="background:${typeColor}; font-size:11px; padding:4px 8px; border-radius:6px; box-shadow:0 2px 4px rgba(0,0,0,0.2); margin:0;">${typeIcon} ${typeText}</span>`;
+            }
+            
+            typeLabelDiv.innerHTML = `
+                <a href="${navUrl}" target="_blank" style="text-decoration:none; display:block;">
+                    <button class="btn" style="width:100%; height:44px; font-size:13px; background:var(--card); border:1px solid var(--border); color:var(--text); display:flex; align-items:center; justify-content:center; gap:8px; font-weight:700; border-radius:12px; box-shadow:0 2px 5px rgba(0,0,0,0.05);">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/a/aa/Google_Maps_icon_%282020%29.svg" style="width:20px; height:20px;"> Navigate${distText}
+                    </button>
+                </a>`;
+        }
+
         function setupTypePickers() {
             ['modalTypePicker', 'detailTypePicker'].forEach(id => {
                 const el = document.getElementById(id); if (!el) return;
@@ -1275,6 +1451,7 @@
                                 saveData(); 
                                 saveToCloud(item.path ? 'walks' : 'pins', item);
                                 refreshMapItems(); 
+                                renderTypeLabel(item);
                             }
                         }
                     }; el.appendChild(btn);
@@ -1531,11 +1708,26 @@
 
                 let ratingHtml = '';
                 if (i.comments && i.comments.length > 0) {
-                    ratingHtml = `<span style="color:#fbbf24; font-weight:800; margin-right:6px;">★ ${i.rating.toFixed(1)}</span>`;
+                    ratingHtml = `<span style="display:inline-block; background:rgba(251, 191, 36, 0.15); color:#fbbf24; font-weight:800; padding:2px 6px; border-radius:4px; font-size:10px;">★ ${i.rating.toFixed(1)}</span>`;
                 }
-                const distHtml = i.d ? `${formatDist(i.d)} away` : '';
+                
+                const distHtml = i.d ? `<span style="font-weight:600;">${formatDist(i.d)} away</span>` : '';
 
-                div.innerHTML = `<img class="highlight-thumb" src="${i.photo || 'https://placehold.co/100x100?text=No+Photo'}"><div style="flex:1"><div style="display:flex; justify-content:space-between; margin-bottom:2px;"><span class="type-label" style="background:${labelColor}">${iconChar} ${labelText}</span>${visibilityLabel}</div><p style="font-weight:bold;font-size:13px;margin:0;">${i.name}</p><div style="font-size:11px;color:var(--text);opacity:0.5;">${ratingHtml}${distHtml}</div></div>`;
+                const thumb = (i.photos && i.photos.length > 0) ? i.photos[0] : (i.photo || 'https://placehold.co/100x100?text=No+Photo');
+                
+                div.innerHTML = `
+                    <img class="highlight-thumb" src="${thumb}">
+                    <div style="flex:1; min-width:0;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                            <span class="type-label" style="background:${labelColor}">${iconChar} ${labelText}</span>
+                            ${visibilityLabel}
+                        </div>
+                        <p style="font-weight:bold; font-size:13px; margin:0 0 6px 0; line-height:1.2; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${i.name}</p>
+                        <div style="display:flex; align-items:center; gap:8px; font-size:11px; color:var(--text); opacity:0.8;">
+                            ${ratingHtml}
+                            ${distHtml}
+                        </div>
+                    </div>`;
                 div.onclick = () => { 
                     const obj = i.type === 'PIN' ? storage.pins.find(p=>p.id===i.id) : storage.walks.find(w=>w.id===i.id); 
                     if(i.type === 'WALK' && obj.path) {
@@ -1611,7 +1803,7 @@
             }
         };
 
-        function resetModal() { document.getElementById('itemName').value = ''; document.getElementById('itemDesc').value = ''; setupTypePickers(); }
+        function resetModal() { document.getElementById('itemName').value = ''; document.getElementById('itemDesc').value = ''; setupTypePickers(); tempCreationPhotos = []; document.getElementById('modalPhotoList').innerHTML = ''; }
 
         document.getElementById('confirmSaveBtn').onclick = async () => {
             if (!currentUser) return;
@@ -1626,7 +1818,7 @@
             if (tempPath.length < 2) { 
                 flat = pendingCoords.lat; 
                 flon = pendingCoords.lng; 
-                entry = { id, name, desc, rating: 0, lat: flat, lng: flon, color: selectedColor, type: 'PIN', userId: currentUser.uid, creatorName: currentUser.displayName || "User", isPublic: isPublic };
+                entry = { id, name, desc, rating: 0, lat: flat, lng: flon, color: selectedColor, type: 'PIN', userId: currentUser.uid, creatorName: currentUser.displayName || "User", isPublic: isPublic, photos: [...tempCreationPhotos] };
                 storage.pins.push(entry); 
                 addPin(entry);
                 await saveToCloud('pins', entry);
@@ -1649,7 +1841,8 @@
                     type: 'WALK',
                     userId: currentUser.uid,
                     isPublic: isPublic,
-                    creatorName: currentUser.displayName || "User"
+                    creatorName: currentUser.displayName || "User",
+                    photos: [...tempCreationPhotos]
                 }; 
                 storage.walks.push(entry); 
                 addWalk(entry); 
@@ -1660,6 +1853,7 @@
             document.getElementById('modal-overlay').style.display = 'none'; 
             goBack(); 
             fetchPhoto(flat, flon, id);
+            tempCreationPhotos = [];
             
             tempPath = [];
             tempPoly.setLatLngs([]);
@@ -1729,21 +1923,58 @@
             if(isWalk) { document.querySelectorAll('#editModeSelector .mode-btn').forEach(btn => { btn.classList.toggle('active', btn.dataset.mode === (item.activity || 'walk')); }); }
             if(document.body.classList.contains('mobile-mode')) snapTo('half');
             const floatEdit = document.getElementById('floatEditBtn'); floatEdit.innerHTML = '🖋️'; floatEdit.classList.remove('is-editing');
-            document.getElementById('floatDeleteBtn').style.display = 'none'; document.getElementById('floatUploadBtn').style.display = 'none';
-            document.getElementById('detPhoto').src = item.photo || "https://placehold.co/500x300?text=No+Photo";
+            document.getElementById('floatDeleteBtn').style.display = 'none'; document.getElementById('editAddPhotoBtn').style.display = 'none';
+            
+            // Slideshow Logic
+            if(slideshowInterval) { clearInterval(slideshowInterval); slideshowInterval = null; }
+            const imgEl = document.getElementById('detPhoto');
+            const imgBackEl = document.getElementById('detPhotoBack');
+            let photos = [];
+            if(item.photos && item.photos.length > 0) photos = item.photos;
+            else if(item.photo) photos = [item.photo];
+
+            if(photos.length > 0) {
+                currentPhotoIndex = 0;
+                imgEl.src = photos[0];
+                imgBackEl.src = photos[0];
+                imgEl.style.opacity = '1';
+                imgEl.style.cursor = 'pointer';
+                imgEl.onclick = () => openLightbox(currentPhotoIndex, photos);
+                if(photos.length > 1) {
+                    slideshowInterval = setInterval(() => {
+                        const nextIndex = (currentPhotoIndex + 1) % photos.length;
+                        imgBackEl.src = photos[nextIndex];
+                        imgEl.style.opacity = '0';
+                        setTimeout(() => {
+                            currentPhotoIndex = nextIndex;
+                            imgEl.src = photos[currentPhotoIndex];
+                            imgEl.style.transition = 'none';
+                            imgEl.style.opacity = '1';
+                            void imgEl.offsetWidth; // Force reflow
+                            imgEl.style.transition = 'opacity 1s ease-in-out';
+                        }, 1000);
+                    }, 5000);
+                }
+            } else { imgEl.src = "https://placehold.co/500x300?text=No+Photo"; imgEl.onclick = null; }
+
             document.getElementById('editTitle').value = item.name; document.getElementById('editDesc').value = item.desc || "";
             document.querySelectorAll('.edit-input').forEach(i=>i.classList.remove('active'));
             
             const creatorDiv = document.getElementById('detCreator');
             let creatorName = item.creatorName;
             if(currentUser && item.userId === currentUser.uid) creatorName = currentUser.displayName;
-            creatorDiv.innerText = creatorName ? `Uploaded by ${creatorName}` : '';
+            
+            const dateObj = new Date(item.id);
+            const dateStr = dateObj.toLocaleDateString();
+            creatorDiv.innerHTML = (creatorName ? `Uploaded by ${creatorName}` : '') + ` <span style="opacity:0.6; font-weight:400;">• ${dateStr}</span>`;
 
             if(item.userId && !creatorName) {
                 db.collection('users').doc(item.userId).get().then(doc => {
-                    if(doc.exists && doc.data().displayName) { item.creatorName = doc.data().displayName; creatorDiv.innerText = `Uploaded by ${item.creatorName}`; saveData(); }
+                    if(doc.exists && doc.data().displayName) { item.creatorName = doc.data().displayName; creatorDiv.innerHTML = `Uploaded by ${item.creatorName} <span style="opacity:0.6; font-weight:400;">• ${dateStr}</span>`; saveData(); }
                 }).catch(()=>{});
             }
+
+            renderTypeLabel(item);
 
             waypointMarkers.forEach(m => map.removeLayer(m)); waypointMarkers = [];
             renderComments(item);
@@ -1776,22 +2007,18 @@
             
             let html = "";
 
-            if(currentUser) {
-                const btnText = editingCommentId ? "Update Review" : "Post Review";
-                const cancelBtn = editingCommentId ? `<button class="btn" onclick="cancelEdit()" style="margin-top:5px; background:transparent; border:1px solid var(--border);">Cancel</button>` : '';
-                const title = editingCommentId ? 'Edit Review' : 'Rate & Review';
-                html += `<div class="new-comment-box" style="margin-top:0;"><span class="settings-label">${title}</span><div class="star-input" id="commentStarInput"><span data-v="1">★</span><span data-v="2">★</span><span data-v="3">★</span><span data-v="4">★</span><span data-v="5">★</span></div><textarea id="newCommentText" class="modal-input" rows="3" placeholder="Write a review..." style="margin-bottom:10px;"></textarea><button class="btn btn-save-action" onclick="postComment()">${btnText}</button>${cancelBtn}</div>`;
-            } else {
-                html += `<div style="padding:10px; background:rgba(0,0,0,0.05); border-radius:8px; text-align:center; font-size:12px;">Log in to leave a review.</div>`;
-            }
-            
             const count = item.comments ? item.comments.length : 0;
-            html += `<div onclick="toggleReviewsList()" style="cursor:pointer; display:flex; justify-content:space-between; align-items:center; margin-top:15px; padding: 5px 0; border-bottom: 1px solid var(--border);">
+            
+            html += `<div onclick="toggleReviewsList()" style="cursor:pointer; display:flex; justify-content:space-between; align-items:center; margin-top:5px; padding: 10px 0; border-bottom: 1px solid var(--border);">
                 <h4 style="margin:0; font-size:14px;">Reviews (${count})</h4>
-                <span id="reviewsChevron" style="font-size:10px; opacity:0.6; transform: rotate(-90deg); transition: 0.2s;">▼</span>
+                <span id="reviewsChevron" style="font-size:10px; opacity:0.6; transition: 0.2s;">▼</span>
             </div>`;
 
-            html += `<div id="reviewsListContainer" style="display:none; margin-top:10px;">`;
+            if(currentUser) {
+                html += `<button class="btn" onclick="openReviewModal()" style="margin-top:10px; margin-bottom:10px; background:var(--bg); border:1px solid var(--border); color:var(--text);">Write a Review</button>`;
+            }
+
+            html += `<div id="reviewsListContainer" style="display:block; margin-top:10px;">`;
             if(item.comments && item.comments.length > 0) {
                 item.comments.sort((a,b) => {
                     if(currentUser && a.userId === currentUser.uid && b.userId !== currentUser.uid) return -1;
@@ -1799,13 +2026,29 @@
                     return b.timestamp - a.timestamp;
                 }).forEach(c => {
                     const date = new Date(c.timestamp).toLocaleDateString();
-                    const stars = '★'.repeat(c.rating) + '☆'.repeat(5 - c.rating);
                     let actions = '';
                     if(currentUser && c.userId === currentUser.uid) {
-                        actions = `<div class="comment-actions"><button class="comment-action-btn" onclick="editComment(${item.id}, ${c.id})">Edit</button><button class="comment-action-btn" onclick="deleteComment(${item.id}, ${c.id})">Delete</button></div>`;
+                        actions = `<div class="comment-actions"><button class="comment-action-btn" onclick="editComment(${item.id}, ${c.id})">Edit</button><button class="comment-action-btn" onclick="deleteComment(${item.id}, ${c.id})" style="color:var(--danger); border-color:var(--danger);">Delete</button></div>`;
                     }
+
+                    let photoHtml = '';
+                    if(c.photos && c.photos.length > 0) {
+                        photoHtml = `<div class="comment-photos">`;
+                        c.photos.forEach((p, idx) => {
+                             photoHtml += `<img src="${p}" class="comment-photo-thumb" onclick="openLightbox(${idx}, ${JSON.stringify(c.photos).replace(/"/g, '&quot;')}); event.stopPropagation();">`;
+                        });
+                        photoHtml += `</div>`;
+                    }
+
                     const commName = (currentUser && c.userId === currentUser.uid) ? currentUser.displayName : (c.displayName || 'Anonymous');
-                    html += `<div class="comment-item"><div class="comment-header"><span class="comment-user">${commName}</span><span class="comment-date">${date}</span></div><div class="comment-stars">${stars}</div><p class="comment-text">${c.text}</p>${actions}</div>`;
+                    let displayText = commName.substring(0, 2).toUpperCase();
+                    if (currentUser && c.userId === currentUser.uid && currentUser.avatarText) displayText = currentUser.avatarText;
+                    else if (c.avatarText) displayText = c.avatarText;
+                    
+                    const avatarBg = (currentUser && c.userId === currentUser.uid && currentUser.color) ? currentUser.color : (c.userColor || 'linear-gradient(135deg, var(--primary), var(--accent))');
+                    const ratingDisplay = `<div style="position:absolute; top:16px; right:16px; font-size:13px; font-weight:800; color:#fbbf24; background:rgba(251, 191, 36, 0.15); padding:2px 8px; border-radius:6px;">${c.rating.toFixed(1)} ★</div>`;
+                    
+                    html += `<div class="comment-item">${ratingDisplay}<div class="comment-header"><div class="comment-avatar" style="background:${avatarBg}">${displayText}</div><div class="comment-info"><span class="comment-user">${commName}</span><span class="comment-date">${date}</span></div></div><p class="comment-text" style="margin-top:5px;">${c.text}</p>${photoHtml}${actions}</div>`;
                 });
             } else {
                 html += `<p style="font-size:12px; opacity:0.6; font-style:italic;">No reviews yet.</p>`;
@@ -1813,27 +2056,56 @@
             html += `</div>`;
 
             container.innerHTML = html;
+        }
 
-            if(currentUser) {
-                if(editingCommentId && item.comments) {
-                    const c = item.comments.find(x => x.id === editingCommentId);
-                    if(c) {
-                        document.getElementById('newCommentText').value = c.text;
-                        window.currentCommentRating = c.rating;
-                        const stars = document.querySelectorAll('#commentStarInput span');
-                        stars.forEach(st => st.classList.toggle('active', parseInt(st.dataset.v) <= c.rating));
-                    }
+        function renderReviewThumbnails() {
+            const container = document.getElementById('modalReviewPhotoPreview');
+            if(!container) return;
+            container.innerHTML = tempReviewPhotos.map(url => `<img src="${url}" style="width:40px; height:40px; object-fit:cover; border-radius:4px; border:1px solid var(--border);">`).join('');
+        }
+
+        function openReviewModal() {
+            document.getElementById('review-modal-overlay').style.display = 'flex';
+            const stars = document.querySelectorAll('#modalReviewStars span');
+            
+            // Setup star click listeners
+            stars.forEach(s => {
+                s.onclick = () => {
+                    const val = parseInt(s.dataset.v);
+                    window.currentCommentRating = val;
+                    stars.forEach(st => st.classList.toggle('active', parseInt(st.dataset.v) <= val));
+                };
+            });
+
+            if(editingCommentId) {
+                document.getElementById('reviewModalTitle').innerText = 'Edit Review';
+                document.getElementById('postReviewBtn').innerText = 'Update Review';
+                const item = storage.pins.find(p=>p.id===activeSelectionId) || storage.walks.find(w=>w.id===activeSelectionId);
+                const c = item.comments.find(x => x.id === editingCommentId);
+                if(c) {
+                    document.getElementById('modalReviewText').value = c.text;
+                    window.currentCommentRating = c.rating;
+                    stars.forEach(st => st.classList.toggle('active', parseInt(st.dataset.v) <= c.rating));
+                    tempReviewPhotos = c.photos ? [...c.photos] : [];
+                    renderReviewThumbnails();
                 }
+            } else {
+                document.getElementById('reviewModalTitle').innerText = 'Rate & Review';
+                document.getElementById('postReviewBtn').innerText = 'Post Review';
+                document.getElementById('modalReviewText').value = '';
+                window.currentCommentRating = 0;
+                stars.forEach(st => st.classList.remove('active'));
+                tempReviewPhotos = [];
+                renderReviewThumbnails();
+            }
+        }
 
-                let selectedRating = 0;
-                const stars = document.querySelectorAll('#commentStarInput span');
-                stars.forEach(s => {
-                    s.onclick = () => {
-                        selectedRating = parseInt(s.dataset.v);
-                        stars.forEach(st => st.classList.toggle('active', parseInt(st.dataset.v) <= selectedRating));
-                        window.currentCommentRating = selectedRating;
-                    };
-                });
+        function closeReviewModal() {
+            document.getElementById('review-modal-overlay').style.display = 'none';
+            if(editingCommentId) {
+                editingCommentId = null;
+                const item = storage.pins.find(p=>p.id===activeSelectionId) || storage.walks.find(w=>w.id===activeSelectionId);
+                renderComments(item);
             }
         }
 
@@ -1856,10 +2128,9 @@
                 if(uDoc.exists && uDoc.data().displayName) currentDisplayName = uDoc.data().displayName;
             } catch(e){}
 
-            const text = document.getElementById('newCommentText').value.trim();
+            const text = document.getElementById('modalReviewText').value.trim();
             const rating = window.currentCommentRating || 0;
             if(rating === 0) { alert("Please select a star rating."); return; }
-            if(!text) { alert("Please write a review."); return; }
 
             const item = storage.pins.find(p=>p.id===activeSelectionId) || storage.walks.find(w=>w.id===activeSelectionId);
             if(!item) return;
@@ -1871,31 +2142,31 @@
                     item.comments[idx].text = text;
                     item.comments[idx].rating = rating;
                     item.comments[idx].timestamp = Date.now();
+                    item.comments[idx].photos = [...tempReviewPhotos];
                 }
                 editingCommentId = null;
             } else {
-                item.comments.push({ id: Date.now(), userId: currentUser.uid, displayName: currentDisplayName || "User", text: text, rating: rating, timestamp: Date.now() });
+                item.comments.push({ id: Date.now(), userId: currentUser.uid, displayName: currentDisplayName || "User", text: text, rating: rating, timestamp: Date.now(), photos: [...tempReviewPhotos], userColor: currentUser.color || null, avatarText: currentUser.avatarText || null });
             }
             
             const total = item.comments.reduce((acc, c) => acc + c.rating, 0);
             item.rating = Math.round(total / item.comments.length);
 
             saveData(); await saveToCloud(item.path ? 'walks' : 'pins', item);
+            closeReviewModal();
             renderComments(item); updateHighlights();
             updateDetailRating(item);
+            tempReviewPhotos = [];
         }
 
         function editComment(itemId, commentId) {
             editingCommentId = commentId;
-            const item = storage.pins.find(p=>p.id===itemId) || storage.walks.find(w=>w.id===itemId);
-            renderComments(item);
+            openReviewModal();
         }
 
         function cancelEdit() {
             editingCommentId = null;
-            const item = storage.pins.find(p=>p.id===activeSelectionId) || storage.walks.find(w=>w.id===activeSelectionId);
-            window.currentCommentRating = 0;
-            renderComments(item);
+            closeReviewModal();
         }
 
         async function deleteComment(itemId, commentId) {
@@ -2018,7 +2289,7 @@
 
             isEditing = !isEditing; const editBtn = document.getElementById('floatEditBtn'); editBtn.innerHTML = isEditing ? '✅' : '🖋️'; editBtn.classList.toggle('is-editing', isEditing);
             document.getElementById('floatDeleteBtn').style.display = isEditing ? 'flex' : 'none'; 
-            document.getElementById('floatUploadBtn').style.display = isEditing ? 'flex' : 'none'; 
+            document.getElementById('editAddPhotoBtn').style.display = isEditing ? 'block' : 'none'; 
             
             const isWalk = (item.path !== undefined);
             document.getElementById('editTypeContainer').style.display = (isEditing && !isWalk) ? 'block' : 'none';
@@ -2041,6 +2312,111 @@
                     saveToCloud(item.path ? 'walks' : 'pins', item);
                     updateHighlights();
                 };
+            }
+        }
+
+        function openUrlUploadPopup(context) {
+            uploadContext = context;
+            document.getElementById('upload-popup').style.display = 'flex';
+            document.getElementById('imgUrlInput').value = '';
+            document.getElementById('uploadPreview').src = '';
+            document.getElementById('uploadPreview').style.display = 'none';
+            document.getElementById('uploadPreviewContainer').style.display = 'none';
+            document.getElementById('uploadStatus').innerText = 'Enter a URL to preview';
+            document.getElementById('uploadStatus').style.color = 'var(--text)';
+            document.getElementById('uploadProgressContainer').style.display = 'none';
+            document.getElementById('btnConfirmUpload').style.display = 'block';
+            document.getElementById('btnConfirmUpload').disabled = true;
+            document.getElementById('btnConfirmUpload').style.opacity = '0.5';
+        }
+
+        const imgUrlInput = document.getElementById('imgUrlInput');
+        const previewImg = document.getElementById('uploadPreview');
+        if(imgUrlInput && previewImg) {
+            imgUrlInput.oninput = (e) => {
+                const url = e.target.value.trim();
+                if(url) {
+                    document.getElementById('uploadPreviewContainer').style.display = 'flex';
+                    previewImg.src = url;
+                    document.getElementById('uploadStatus').innerText = 'Previewing...';
+                    document.getElementById('uploadStatus').style.color = 'var(--text)';
+                } else {
+                    document.getElementById('uploadPreviewContainer').style.display = 'none';
+                    document.getElementById('uploadStatus').innerText = 'Enter a URL to preview';
+                }
+            };
+            
+            previewImg.onload = () => { previewImg.style.display = 'block'; document.getElementById('btnConfirmUpload').disabled = false; document.getElementById('btnConfirmUpload').style.opacity = '1'; document.getElementById('uploadStatus').innerText = 'Image loaded'; document.getElementById('uploadStatus').style.color = 'var(--accent)'; };
+            previewImg.onerror = () => { previewImg.style.display = 'none'; document.getElementById('btnConfirmUpload').disabled = true; document.getElementById('btnConfirmUpload').style.opacity = '0.5'; document.getElementById('uploadStatus').innerText = 'Invalid Image URL'; document.getElementById('uploadStatus').style.color = 'var(--danger)'; };
+        }
+
+        function cancelUpload() {
+            document.getElementById('upload-popup').style.display = 'none';
+            document.getElementById('imgUrlInput').value = '';
+        }
+
+        async function performUrlAdd() {
+            const url = document.getElementById('imgUrlInput').value.trim();
+            if (!url) return;
+
+            if (uploadContext === 'create') {
+                tempCreationPhotos.push(url);
+                document.getElementById('modalPhotoList').innerHTML += `<img src="${url}" style="width:40px; height:40px; object-fit:cover; border-radius:4px; border:1px solid var(--border);">`;
+                cancelUpload();
+                return;
+            }
+
+            if (uploadContext === 'review') {
+                tempReviewPhotos.push(url);
+                renderReviewThumbnails();
+                cancelUpload();
+                return;
+            }
+            
+            if (!activeSelectionId) return;
+            
+            const item = storage.pins.find(p=>p.id===activeSelectionId) || storage.walks.find(w=>w.id===activeSelectionId);
+            if(!item) return;
+
+            if(!item.photos) item.photos = [];
+            if(item.photo) { item.photos.push(item.photo); delete item.photo; }
+            item.photos.push(url);
+            
+            saveData(); 
+            await saveToCloud(item.path ? 'walks' : 'pins', item);
+            showDetails(item, item.path !== undefined, null);
+            cancelUpload();
+        }
+
+        function getHighResUrl(url) {
+            if (!url) return '';
+            // Handle Wikipedia/Wikimedia thumbnails to get original
+            if ((url.includes('wikipedia.org') || url.includes('wikimedia.org')) && url.includes('/thumb/')) {
+                try {
+                    const parts = url.split('/thumb/');
+                    if (parts.length === 2) {
+                        const suffix = parts[1];
+                        const pathParts = suffix.split('/');
+                        if (pathParts.length >= 2) {
+                            pathParts.pop(); // Remove the last segment (the thumbnail filename)
+                            return parts[0] + '/' + pathParts.join('/');
+                        }
+                    }
+                } catch(e) { return url; }
+            }
+            return url;
+        }
+
+        function openLightbox(index, photos) { activeLightboxPhotos = photos; currentLightboxIndex = index; updateLightboxImage(); document.getElementById('lightbox-overlay').style.display = 'flex'; }
+        function closeLightbox() { document.getElementById('lightbox-overlay').style.display = 'none'; }
+        function changeLightboxImage(dir) { if (!activeLightboxPhotos.length) return; currentLightboxIndex = (currentLightboxIndex + dir + activeLightboxPhotos.length) % activeLightboxPhotos.length; updateLightboxImage(); }
+        function updateLightboxImage() { 
+            const img = document.getElementById('lightbox-img'); 
+            if (activeLightboxPhotos[currentLightboxIndex]) {
+                const lowRes = activeLightboxPhotos[currentLightboxIndex];
+                const highRes = getHighResUrl(lowRes);
+                img.src = lowRes;
+                if(highRes !== lowRes) { const temp = new Image(); temp.onload = () => img.src = highRes; temp.src = highRes; }
             }
         }
 
@@ -2400,11 +2776,67 @@
                 if (userDoc.exists && userDoc.data().displayName) {
                     currentUser.displayName = userDoc.data().displayName;
                     document.getElementById('settingsDisplayName').value = currentUser.displayName;
+                        if(userDoc.data().color) currentUser.color = userDoc.data().color;
+                        if(userDoc.data().avatarText) currentUser.avatarText = userDoc.data().avatarText;
+                        updateProfileSettingsUI();
                     updateHighlights();
                 } else {
                     document.getElementById('dn-overlay').style.display = 'flex';
                 }
             } catch(e) { console.error("Profile check failed", e); }
+        }
+
+        function updateProfileSettingsUI() {
+            const preview = document.getElementById('settingsAvatarPreview');
+            const picker = document.getElementById('profileColorPicker');
+            const emojiPicker = document.getElementById('profileEmojiPicker');
+            const textInput = document.getElementById('avatarTextInput');
+            if(!preview || !picker) return;
+
+            const initials = (currentUser.displayName || 'User').substring(0, 2).toUpperCase();
+            preview.innerText = currentUser.avatarText || initials;
+            preview.style.background = currentUser.color || 'linear-gradient(135deg, var(--primary), var(--accent))';
+
+            if(textInput) {
+                textInput.value = currentUser.avatarText || '';
+                textInput.oninput = (e) => { preview.innerText = e.target.value || initials; };
+                textInput.onchange = (e) => { saveAvatarText(e.target.value); };
+            }
+
+            if(emojiPicker) {
+                emojiPicker.innerHTML = '';
+                AVATAR_EMOJIS.forEach(e => {
+                    const span = document.createElement('span');
+                    span.className = 'emoji-option';
+                    span.innerText = e;
+                    span.onclick = () => {
+                        if(textInput) textInput.value = e;
+                        preview.innerText = e;
+                        saveAvatarText(e);
+                    };
+                    emojiPicker.appendChild(span);
+                });
+            }
+
+            picker.innerHTML = '';
+            AVATAR_COLORS.forEach(c => {
+                const dot = document.createElement('div');
+                dot.className = 'color-dot';
+                dot.style.background = c;
+                if(currentUser.color === c) dot.classList.add('active');
+                dot.onclick = () => saveProfileColor(c);
+                picker.appendChild(dot);
+            });
+        }
+
+        async function saveAvatarText(text) {
+            if(!currentUser) return;
+            currentUser.avatarText = text;
+            await db.collection('users').doc(currentUser.uid).set({ avatarText: text }, { merge: true });
+            if(activeSelectionId) {
+                const item = storage.pins.find(p=>p.id===activeSelectionId) || storage.walks.find(w=>w.id===activeSelectionId);
+                if(item) renderComments(item);
+            }
         }
 
         async function saveDisplayName(isInitial) {
@@ -2451,6 +2883,20 @@
                 document.getElementById('settingsDisplayName').value = name;
             } else {
                 alert("Display Name Updated!");
+            }
+        }
+
+        async function saveProfileColor(color) {
+            if(!currentUser) return;
+            currentUser.color = color;
+            updateProfileSettingsUI();
+            
+            await db.collection('users').doc(currentUser.uid).set({ color: color }, { merge: true });
+            
+            // Refresh comments if any are visible
+            if(activeSelectionId) {
+                const item = storage.pins.find(p=>p.id===activeSelectionId) || storage.walks.find(w=>w.id===activeSelectionId);
+                if(item) renderComments(item);
             }
         }
 
