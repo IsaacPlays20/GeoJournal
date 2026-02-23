@@ -124,6 +124,19 @@
         .sidebar-scroll-area::-webkit-scrollbar { width: 4px; }
         .sidebar-scroll-area::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
 
+        .modal::-webkit-scrollbar, 
+        #fullEmojiGrid::-webkit-scrollbar, 
+        #modalPhotoList::-webkit-scrollbar, 
+        #modalReviewPhotoPreview::-webkit-scrollbar { 
+            width: 4px; height: 4px; 
+        }
+        .modal::-webkit-scrollbar-track, #fullEmojiGrid::-webkit-scrollbar-track, #modalPhotoList::-webkit-scrollbar-track, #modalReviewPhotoPreview::-webkit-scrollbar-track { 
+            background: transparent; 
+        }
+        .modal::-webkit-scrollbar-thumb, #fullEmojiGrid::-webkit-scrollbar-thumb, #modalPhotoList::-webkit-scrollbar-thumb, #modalReviewPhotoPreview::-webkit-scrollbar-thumb { 
+            background: var(--border); border-radius: 4px; 
+        }
+
         .scroll-spacer { height: 450px; flex-shrink: 0; pointer-events: none; }
 
         #map { width: 100vw; height: 100vh; z-index: 1; }
@@ -183,7 +196,7 @@
         
         #detTypeOverlay { top: 12px; left: 12px; padding: 0; background: transparent; border: none; backdrop-filter: none; }
 
-        #detRating { top: 54px; right: 12px; }
+        #detRating { top: 12px; right: 12px; }
         .floating-action-btn { top: 12px; right: 12px; left: auto; color: white; width: 34px; height: 34px; padding: 0; align-items: center; justify-content: center; cursor: pointer; background: rgba(15, 23, 42, 0.7); border-radius: 10px; }
         #floatEditBtn:hover, #floatEditBtn.is-editing { background: var(--primary); } 
         .floating-action-btn.btn-delete-float { right: 54px; left: auto; }
@@ -293,10 +306,10 @@
 
         #modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.7); display: none; align-items: center; justify-content: center; z-index: 9999; backdrop-filter: blur(4px); }
 
-        .modal { background: var(--card); padding: 25px; border-radius: 20px; width: 340px; display: flex; flex-direction: column; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2); border: 1px solid var(--border); }
-        .modal h3 { margin: 0 0 15px 0; font-size: 1.25rem; font-weight: 900; letter-spacing: -0.5px; text-align: center; }
-        .modal-inputs { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
-        .modal-input { width: 100%; padding: 14px; border: 1px solid var(--border); border-radius: 12px; background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; box-sizing: border-box; font-size: 14px; font-weight: 500; transition: border-color 0.2s; }
+        .modal { background: var(--card); padding: 15px; border-radius: 20px; width: 340px; display: flex; flex-direction: column; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2); border: 1px solid var(--border); max-height: 90vh; overflow-y: auto; }
+        .modal h3 { margin: 0 0 10px 0; font-size: 1.25rem; font-weight: 900; letter-spacing: -0.5px; text-align: center; }
+        .modal-inputs { display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px; }
+        .modal-input { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 12px; background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; box-sizing: border-box; font-size: 14px; font-weight: 500; transition: border-color 0.2s; }
         .modal-input:focus { border-color: var(--primary); outline: none; }
         .modal-btns { display: flex; flex-direction: column; gap: 10px; }
 
@@ -469,6 +482,18 @@
         .color-dot.active { border-color: var(--text); transform: scale(1.2); box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
         .emoji-option { font-size: 16px; cursor: pointer; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; border-radius: 6px; transition: 0.2s; background: rgba(0,0,0,0.05); border: 1px solid transparent; }
         .emoji-option:hover { background: rgba(0,0,0,0.1); transform: scale(1.1); }
+
+        .facility-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 5px; margin-bottom: 10px; }
+        .facility-btn {
+            background: var(--bg); border: 1px solid var(--border); border-radius: 8px;
+            padding: 8px; font-size: 11px; cursor: pointer; display: flex; flex-direction: row;
+            align-items: center; justify-content: flex-start; gap: 8px; text-align: left;
+            transition: 0.2s; color: var(--text); opacity: 0.8;
+        }
+        .facility-btn.active { background: var(--primary); color: white; border-color: var(--primary); opacity: 1; }
+        .facility-check { width: 14px; height: 14px; border: 1px solid currentColor; border-radius: 3px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .facility-btn.active .facility-check::after { content: "✓"; font-size: 10px; font-weight: 900; }
+        .facility-tag { display: inline-flex; align-items: center; gap: 4px; background: rgba(0,0,0,0.05); border: 1px solid var(--border); border-radius: 6px; padding: 4px 8px; font-size: 11px; margin: 0 4px 4px 0; }
     </style>
 </head>
 <body class="dark-theme auth-active">
@@ -633,7 +658,10 @@
                     </div>
 
                     <div id="route-stats" style="display:none; background:rgba(0,0,0,0.05); padding:15px; border-radius:12px; margin-top: 5px;">
-                        <p id="liveDist" style="margin:0; font-weight:800; font-size: 1.2rem; color: var(--primary);">0.00 km</p>
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <p id="liveDist" style="margin:0; font-weight:800; font-size: 1.2rem; color: var(--primary);">0.00 km</p>
+                            <p id="liveTime" style="margin:0; font-weight:600; font-size: 0.9rem; opacity:0.7;">00m</p>
+                        </div>
                         <button class="btn" id="drawGraphBtn" onclick="toggleGraph()" style="margin-top:8px; background:rgba(0,0,0,0.05); border:1px solid var(--border); font-size:11px;">📈 Show Height Graph</button>
                         <button class="btn btn-save-action" id="finishWalkBtn" style="margin-top:8px; width: 100%;">💾 Save Activity</button>
                     </div>
@@ -737,7 +765,7 @@
                             <textarea id="editTitle" class="edit-input" rows="2"></textarea>
                         </div>
                     </div>
-                    <div id="detCreator" style="font-size: 11px; opacity: 0.7; margin-bottom: 8px; padding: 0 5px; font-weight: 600;"></div>
+                    <div id="detCreator" style="margin-bottom: 8px; padding: 0 5px;"></div>
                     <button class="btn" id="editAddPhotoBtn" onclick="openUrlUploadPopup('edit')" style="display:none; margin-bottom:10px; background:var(--bg); border:1px solid var(--border); color:var(--text); font-weight:600;">📷 Add Photo URL</button>
                     <div id="detTypeLabel" style="padding: 0 5px; margin-bottom: 10px;"></div>
 
@@ -765,6 +793,12 @@
                             <label class="switch"><input type="checkbox" id="editPublicToggle"><span class="slider"></span></label>
                         </div>
                     </div>
+                    <div id="detFacilities" style="display:flex; flex-wrap:wrap; margin-bottom:10px;"></div>
+                    <div id="editFacilitiesContainer" style="display:none; margin-bottom:10px;">
+                        <span class="settings-label">Facilities</span>
+                        <div class="facility-grid" id="editFacilityPicker"></div>
+                    </div>
+
                     <div id="detStats"></div>
                     <div class="info-card"><textarea id="editDesc" class="edit-input" rows="4" placeholder="No notes added..."></textarea></div>
                     <div id="commentsSection" class="comments-section"></div>
@@ -831,13 +865,25 @@
                     <span class="settings-label" style="font-size:12px;">Make Public</span>
                     <label class="switch"><input type="checkbox" id="publicToggle"><span class="slider"></span></label>
                 </div>
+                <div id="modalFacilitiesSection">
+                    <span class="settings-label" style="font-size:12px; margin-bottom:5px; display:block;">Facilities</span>
+                    <div class="facility-grid" id="modalFacilityPicker"></div>
+                </div>
                 <input type="text" id="itemName" class="modal-input" placeholder="Location Name">
-                <textarea id="itemDesc" class="modal-input" placeholder="Notes..." style="height: 100px; resize: none;"></textarea>
+                <textarea id="itemDesc" class="modal-input" placeholder="Notes..." style="height: 60px; resize: none;"></textarea>
             </div>
             <div class="modal-btns">
                 <button class="btn btn-save-action" id="confirmSaveBtn" style="height: 48px; font-size: 14px;">✅ Save to Library</button>
                 <button class="btn" style="background:none; color: var(--text); opacity: 0.6; border: 1px solid var(--border); height: 44px;" onclick="document.getElementById('modal-overlay').style.display='none'">Cancel</button>
             </div>
+        </div>
+    </div>
+
+    <div id="emoji-modal-overlay" style="display:none; position:fixed; inset:0; background:rgba(15, 23, 42, 0.7); align-items:center; justify-content:center; z-index:10002; backdrop-filter:blur(4px);">
+        <div class="modal" style="width: 320px; max-height: 80vh; display: flex; flex-direction: column;">
+            <h3 style="margin-top:0;">Select Icon</h3>
+            <div id="fullEmojiGrid" style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; overflow-y: auto; padding-right: 5px; flex: 1;"></div>
+            <button class="btn" onclick="document.getElementById('emoji-modal-overlay').style.display='none'" style="margin-top:15px; background:transparent; border:1px solid var(--border); color:var(--text);">Close</button>
         </div>
     </div>
 
@@ -892,6 +938,18 @@
             { name: 'Tourist', color: '#06b6d4', icon: '📸' }
         ];
 
+        const FACILITIES = [
+            { id: 'parking', label: 'Car Park', icon: '🅿️' },
+            { id: 'free_parking', label: 'Free Parking', icon: '🆓' },
+            { id: 'transport', label: 'Public Transport', icon: '🚌' },
+            { id: 'toilets', label: 'Toilets', icon: '🚻' },
+            { id: 'fires', label: 'Fires Allowed', icon: '🔥' },
+            { id: 'bins', label: 'Bins', icon: '🗑️' },
+            { id: 'pets', label: 'Pets Allowed', icon: '🐾' },
+            { id: 'camping', label: 'Camping', icon: '⛺' },
+            { id: 'wheelchair', label: 'Wheelchair', icon: '♿' }
+        ];
+
         const AVATAR_COLORS = [
             'linear-gradient(135deg, #2563eb, #06b6d4)', 
             'linear-gradient(135deg, #10b981, #3b82f6)', 
@@ -911,7 +969,19 @@
             'linear-gradient(135deg, #78716c, #44403c)'
         ];
 
-        const AVATAR_EMOJIS = ['👤', '🙂', '🌟', '🚀', '🐱', '🐶', '🦊', '🐼', '🐸', '🌸', '🔥', '💎', '🚲', '🏃', '⛺', '📸'];
+        const BASIC_EMOJIS = ['👤', '🙂', '📍', '🌲', '🏔️', '🌊', '🚲', '🏃'];
+        const ALL_EMOJIS = [
+            '👤', '🙂', '😀', '😎', '🤠', '🥳', '😴', '🤔', 
+            '📍', '🏠', '🏢', '⛺', '🏰', '🗽', '🗼', '🗿',
+            '🌲', '🌳', '🌴', '🌵', '🌿', '🍂', '🍁', '🍄',
+            '🏔️', '⛰️', '🌋', '🗻', '🏜️', '🏖️', '🏝️', '🏞️',
+            '🌊', '💧', '🔥', '🌈', '☀️', '🌙', '⭐', '☁️',
+            '🚲', '🏃', '🚶', '🧗', '🏄', '🏊', '🚣', '🏇',
+            '🚗', '✈️', '🚀', '🚁', '🚂', '🚌', '🏎️', '🏍️',
+            '📸', '🎨', '🎤', '🎧', '🎮', '🎲', '🧩', '🧸',
+            '🐶', '🐱', '🦊', '🐻', '🐼', '🐨', '🐯', '🦁',
+            '🐸', '🐢', '🐙', '🐬', '🐳', '🦈', '🐊', '🦕'
+        ];
 
         // Activity Color Coding
         const ACTIVITY_COLORS = {
@@ -1237,6 +1307,7 @@
                 if (currentMode === 'walk') {
                     tempPoly.setStyle({color: selectedColor});
                 }
+                if (currentMode === 'walk') updateWalkStats();
                 
                 if (isEditing && activeSelectionId) {
                     const walk = storage.walks.find(w => w.id === activeSelectionId);
@@ -1347,6 +1418,7 @@
                         fetchLivePointElevation(latlng.lat, latlng.lng);
                     }
                 }
+                updateHighlights();
             }, (error) => console.error(error), { enableHighAccuracy: true, maximumAge: 0, timeout: 5000 });
         }
 
@@ -1421,7 +1493,18 @@
                 typeOverlay.innerHTML = `<span class="type-label" style="background:${typeColor}; font-size:11px; padding:4px 8px; border-radius:6px; box-shadow:0 2px 4px rgba(0,0,0,0.2); margin:0;">${typeIcon} ${typeText}</span>`;
             }
             
+            const isOwner = currentUser && item.userId === currentUser.uid;
+            let ownerHtml = '';
+            if (isOwner) {
+                ownerHtml = `
+                    <button class="btn" id="bigEditBtn" onclick="toggleEditingLogic()" style="width:100%; height:44px; font-size:13px; background:var(--primary); border:none; color:white; display:flex; align-items:center; justify-content:center; gap:8px; font-weight:700; border-radius:12px; box-shadow:0 2px 5px rgba(0,0,0,0.1); margin-bottom:8px;">
+                        🖋️ Edit Entry
+                    </button>
+                `;
+            }
+
             typeLabelDiv.innerHTML = `
+                ${ownerHtml}
                 <a href="${navUrl}" target="_blank" style="text-decoration:none; display:block;">
                     <button class="btn" style="width:100%; height:44px; font-size:13px; background:var(--card); border:1px solid var(--border); color:var(--text); display:flex; align-items:center; justify-content:center; gap:8px; font-weight:700; border-radius:12px; box-shadow:0 2px 5px rgba(0,0,0,0.05);">
                         <img src="https://upload.wikimedia.org/wikipedia/commons/a/aa/Google_Maps_icon_%282020%29.svg" style="width:20px; height:20px;"> Navigate${distText}
@@ -1537,6 +1620,7 @@
             if(mode !== 'walk' && mode !== 'pin' && mode !== 'record') { 
                 tempPath = []; 
                 walkHistory = []; 
+                nodeHandles.forEach(h => map.removeLayer(h)); nodeHandles = [];
                 tempPoly.setLatLngs([]); 
                 closeElevation();
             }
@@ -1557,6 +1641,7 @@
                 tempPath = [];
                 walkHistory = [];
                 tempPoly.setLatLngs([]);
+                nodeHandles.forEach(h => map.removeLayer(h)); nodeHandles = [];
                 document.getElementById('liveDist').innerText = '0.00 km';
                 closeElevation();
                 setMode('ready');
@@ -1711,7 +1796,7 @@
                     ratingHtml = `<span style="display:inline-block; background:rgba(251, 191, 36, 0.15); color:#fbbf24; font-weight:800; padding:2px 6px; border-radius:4px; font-size:10px;">★ ${i.rating.toFixed(1)}</span>`;
                 }
                 
-                const distHtml = i.d ? `<span style="font-weight:600;">${formatDist(i.d)} away</span>` : '';
+                const distHtml = (i.d !== undefined && i.d !== null) ? `<span style="font-weight:600;">${formatDist(i.d)} away</span>` : '';
 
                 const thumb = (i.photos && i.photos.length > 0) ? i.photos[0] : (i.photo || 'https://placehold.co/100x100?text=No+Photo');
                 
@@ -1787,29 +1872,67 @@
                     tempPath.push(...roadNodes);
                 } else { tempPath.push([e.latlng.lat, e.latlng.lng]); }
                 tempPoly.setLatLngs(tempPath); 
-                let d = 0; for(let i=1; i<tempPath.length; i++) d += L.latLng(tempPath[i-1][0], tempPath[i-1][1]).distanceTo(L.latLng(tempPath[i][0], tempPath[i][1])); 
-                document.getElementById('liveDist').innerText = formatDist(d/1000); 
+                createNodes(tempPoly);
+                updateWalkStats();
                 fetchElevation(tempPath, false); 
             }
         });
+
+        function renderFacilityPicker(containerId, selectedIds = [], isEditingMode = false) {
+            const container = document.getElementById(containerId);
+            if(!container) return;
+            container.innerHTML = '';
+            FACILITIES.forEach(f => {
+                const btn = document.createElement('div');
+                btn.className = 'facility-btn';
+                if(selectedIds.includes(f.id)) btn.classList.add('active');
+                btn.innerHTML = `<div class="facility-check"></div><span>${f.label}</span>`;
+                btn.onclick = () => {
+                    btn.classList.toggle('active');
+                    if(isEditingMode && activeSelectionId) {
+                        const item = storage.pins.find(p=>p.id===activeSelectionId) || storage.walks.find(w=>w.id===activeSelectionId);
+                        if(item) {
+                            if(!item.facilities) item.facilities = [];
+                            if(btn.classList.contains('active')) {
+                                if(!item.facilities.includes(f.id)) item.facilities.push(f.id);
+                            } else {
+                                item.facilities = item.facilities.filter(id => id !== f.id);
+                            }
+                            saveData();
+                            saveToCloud(item.path ? 'walks' : 'pins', item);
+                        }
+                    }
+                };
+                container.appendChild(btn);
+            });
+        }
+
+        function getSelectedFacilities(containerId) {
+            const container = document.getElementById(containerId);
+            if(!container) return [];
+            const selected = [];
+            container.querySelectorAll('.facility-btn.active').forEach((btn, index) => selected.push(FACILITIES[index].id));
+            return selected;
+        }
 
         document.getElementById('undoAddBtn').onclick = () => {
             if (walkHistory.length > 0) {
                 tempPath = walkHistory.pop();
                 tempPoly.setLatLngs(tempPath);
-                let d = 0; for(let i=1; i<tempPath.length; i++) d += L.latLng(tempPath[i-1][0], tempPath[i-1][1]).distanceTo(L.latLng(tempPath[i][0], tempPath[i][1])); 
-                document.getElementById('liveDist').innerText = formatDist(d/1000);
+                createNodes(tempPoly);
+                updateWalkStats();
                 fetchElevation(tempPath, false);
             }
         };
 
-        function resetModal() { document.getElementById('itemName').value = ''; document.getElementById('itemDesc').value = ''; setupTypePickers(); tempCreationPhotos = []; document.getElementById('modalPhotoList').innerHTML = ''; }
+        function resetModal() { document.getElementById('itemName').value = ''; document.getElementById('itemDesc').value = ''; setupTypePickers(); tempCreationPhotos = []; document.getElementById('modalPhotoList').innerHTML = ''; renderFacilityPicker('modalFacilityPicker'); }
 
         document.getElementById('confirmSaveBtn').onclick = async () => {
             if (!currentUser) return;
             const id = Date.now();
             const name = document.getElementById('itemName').value || "Untitled";
             const desc = document.getElementById('itemDesc').value || "";
+            const facilities = getSelectedFacilities('modalFacilityPicker');
             const activityMode = document.querySelector('#addModeSelector .mode-btn.active').dataset.mode;
             const isPublic = document.getElementById('publicToggle').checked;
             
@@ -1818,7 +1941,7 @@
             if (tempPath.length < 2) { 
                 flat = pendingCoords.lat; 
                 flon = pendingCoords.lng; 
-                entry = { id, name, desc, rating: 0, lat: flat, lng: flon, color: selectedColor, type: 'PIN', userId: currentUser.uid, creatorName: currentUser.displayName || "User", isPublic: isPublic, photos: [...tempCreationPhotos] };
+                entry = { id, name, desc, rating: 0, lat: flat, lng: flon, color: selectedColor, type: 'PIN', userId: currentUser.uid, creatorName: currentUser.displayName || "User", isPublic: isPublic, photos: [...tempCreationPhotos], facilities: facilities };
                 storage.pins.push(entry); 
                 addPin(entry);
                 await saveToCloud('pins', entry);
@@ -1842,7 +1965,8 @@
                     userId: currentUser.uid,
                     isPublic: isPublic,
                     creatorName: currentUser.displayName || "User",
-                    photos: [...tempCreationPhotos]
+                    photos: [...tempCreationPhotos],
+                    facilities: facilities
                 }; 
                 storage.walks.push(entry); 
                 addWalk(entry); 
@@ -1918,7 +2042,7 @@
             
             // Only allow edit/delete if owner
             const isOwner = currentUser && item.userId === currentUser.uid;
-            document.getElementById('floatEditBtn').style.display = isOwner ? 'flex' : 'none';
+            document.getElementById('floatEditBtn').style.display = 'none';
             
             if(isWalk) { document.querySelectorAll('#editModeSelector .mode-btn').forEach(btn => { btn.classList.toggle('active', btn.dataset.mode === (item.activity || 'walk')); }); }
             if(document.body.classList.contains('mobile-mode')) snapTo('half');
@@ -1961,20 +2085,44 @@
             document.querySelectorAll('.edit-input').forEach(i=>i.classList.remove('active'));
             
             const creatorDiv = document.getElementById('detCreator');
-            let creatorName = item.creatorName;
-            if(currentUser && item.userId === currentUser.uid) creatorName = currentUser.displayName;
+            let creatorName = item.creatorName || 'Unknown';
+            let creatorColor = 'linear-gradient(135deg, #64748b, #94a3b8)';
+            let creatorAvatar = '👤';
+
+            if(currentUser && item.userId === currentUser.uid) {
+                creatorName = currentUser.displayName;
+                creatorColor = currentUser.color || creatorColor;
+                creatorAvatar = currentUser.avatarText || creatorAvatar;
+            }
             
             const dateObj = new Date(item.id);
-            const dateStr = dateObj.toLocaleDateString();
-            creatorDiv.innerHTML = (creatorName ? `Uploaded by ${creatorName}` : '') + ` <span style="opacity:0.6; font-weight:400;">• ${dateStr}</span>`;
+            const dateStr = dateObj.toLocaleDateString('en-GB');
+            
+            const renderCreator = (name, color, avatar) => {
+                return `<div style="display:flex; align-items:center; gap:10px; padding:5px 0;"><div class="comment-avatar" style="width:32px; height:32px; font-size:14px; background:${color}">${avatar}</div><div style="display:flex; flex-direction:column; justify-content:center;"><span style="font-weight:700; font-size:13px;">${name}</span><span style="font-size:11px; opacity:0.6;">Uploaded on ${dateStr}</span></div></div>`;
+            };
 
-            if(item.userId && !creatorName) {
+            creatorDiv.innerHTML = renderCreator(creatorName, creatorColor, creatorAvatar);
+
+            if(item.userId && (item.userId !== currentUser?.uid)) {
                 db.collection('users').doc(item.userId).get().then(doc => {
-                    if(doc.exists && doc.data().displayName) { item.creatorName = doc.data().displayName; creatorDiv.innerHTML = `Uploaded by ${item.creatorName} <span style="opacity:0.6; font-weight:400;">• ${dateStr}</span>`; saveData(); }
+                    if(doc.exists) { const d = doc.data(); creatorDiv.innerHTML = renderCreator(d.displayName || 'Unknown', d.color || creatorColor, d.avatarText || creatorAvatar); }
                 }).catch(()=>{});
             }
 
             renderTypeLabel(item);
+
+            const facilitiesDiv = document.getElementById('detFacilities');
+            facilitiesDiv.innerHTML = '';
+            if(item.facilities && item.facilities.length > 0) {
+                item.facilities.forEach(fid => {
+                    const f = FACILITIES.find(x => x.id === fid);
+                    if(f) {
+                        facilitiesDiv.innerHTML += `<div class="facility-tag">${f.icon} ${f.label}</div>`;
+                    }
+                });
+                facilitiesDiv.style.display = 'flex';
+            } else { facilitiesDiv.style.display = 'none'; }
 
             waypointMarkers.forEach(m => map.removeLayer(m)); waypointMarkers = [];
             renderComments(item);
@@ -2025,7 +2173,7 @@
                     if(currentUser && b.userId === currentUser.uid && a.userId !== currentUser.uid) return 1;
                     return b.timestamp - a.timestamp;
                 }).forEach(c => {
-                    const date = new Date(c.timestamp).toLocaleDateString();
+                    const date = new Date(c.timestamp).toLocaleDateString('en-GB');
                     let actions = '';
                     if(currentUser && c.userId === currentUser.uid) {
                         actions = `<div class="comment-actions"><button class="comment-action-btn" onclick="editComment(${item.id}, ${c.id})">Edit</button><button class="comment-action-btn" onclick="deleteComment(${item.id}, ${c.id})" style="color:var(--danger); border-color:var(--danger);">Delete</button></div>`;
@@ -2150,7 +2298,7 @@
             }
             
             const total = item.comments.reduce((acc, c) => acc + c.rating, 0);
-            item.rating = Math.round(total / item.comments.length);
+            item.rating = parseFloat((total / item.comments.length).toFixed(1));
 
             saveData(); await saveToCloud(item.path ? 'walks' : 'pins', item);
             closeReviewModal();
@@ -2175,7 +2323,7 @@
             item.comments = item.comments.filter(c => c.id !== commentId);
             
             const total = item.comments.reduce((acc, c) => acc + c.rating, 0);
-            item.rating = item.comments.length ? Math.round(total / item.comments.length) : 0;
+            item.rating = item.comments.length ? parseFloat((total / item.comments.length).toFixed(1)) : 0;
 
             saveData(); await saveToCloud(item.path ? 'walks' : 'pins', item);
             renderComments(item); updateHighlights();
@@ -2254,7 +2402,27 @@
         }
 
         function updateWalkStats() {
-            const layer = window.currentActiveLayer; const item = storage.walks.find(w => w.id === activeSelectionId); if(!item) return;
+            const item = storage.walks.find(w => w.id === activeSelectionId);
+            
+            if (!item && currentMode === 'walk') {
+                let d = 0;
+                const lls = tempPoly.getLatLngs();
+                for(let j=1; j<lls.length; j++) d += lls[j-1].distanceTo(lls[j]);
+                const distKm = d/1000;
+                document.getElementById('liveDist').innerText = formatDist(distKm);
+                
+                const activityMode = document.querySelector('#addModeSelector .mode-btn.active').dataset.mode;
+                const speed = storage.speeds[activityMode] || 5;
+                const totalMins = Math.round((distKm / speed) * 60);
+                const hours = Math.floor(totalMins / 60);
+                const mins = totalMins % 60;
+                const timeEl = document.getElementById('liveTime');
+                if(timeEl) timeEl.innerText = (hours > 0 ? hours + 'h ' : '') + mins + 'm';
+                tempPath = lls.map(l => [l.lat, l.lng]);
+                return;
+            }
+
+            const layer = window.currentActiveLayer; if(!item) return;
             let d = 0; if (layer) { const lls = layer.getLatLngs(); for(let j=1; j<lls.length; j++) d += lls[j-1].distanceTo(lls[j]); item.dist = (d/1000).toFixed(2); item.path = lls.map(l => [l.lat, l.lng]); } else d = parseFloat(item.dist) * 1000;
             let ascent = 0, descent = 0, minE = 0, maxE = 0;
             if(item.elevData && item.elevData.length > 0) {
@@ -2288,6 +2456,13 @@
             }
 
             isEditing = !isEditing; const editBtn = document.getElementById('floatEditBtn'); editBtn.innerHTML = isEditing ? '✅' : '🖋️'; editBtn.classList.toggle('is-editing', isEditing);
+            
+            const bigBtn = document.getElementById('bigEditBtn');
+            if(bigBtn) {
+                bigBtn.innerHTML = isEditing ? '✅ Finish Editing' : '🖋️ Edit Entry';
+                bigBtn.style.background = isEditing ? 'var(--accent)' : 'var(--primary)';
+            }
+
             document.getElementById('floatDeleteBtn').style.display = isEditing ? 'flex' : 'none'; 
             document.getElementById('editAddPhotoBtn').style.display = isEditing ? 'block' : 'none'; 
             
@@ -2295,6 +2470,21 @@
             document.getElementById('editTypeContainer').style.display = (isEditing && !isWalk) ? 'block' : 'none';
             document.getElementById('editWalkOptions').style.display = (isEditing && isWalk) ? 'block' : 'none';
             document.getElementById('editPrivacyContainer').style.display = isEditing ? 'block' : 'none';
+            
+            if(!isEditing) {
+                const facilitiesDiv = document.getElementById('detFacilities');
+                facilitiesDiv.innerHTML = '';
+                if(item.facilities && item.facilities.length > 0) {
+                    item.facilities.forEach(fid => {
+                        const f = FACILITIES.find(x => x.id === fid);
+                        if(f) facilitiesDiv.innerHTML += `<div class="facility-tag">${f.icon} ${f.label}</div>`;
+                    });
+                }
+            }
+
+            document.getElementById('detFacilities').style.display = (isEditing || (!item.facilities || item.facilities.length === 0)) ? 'none' : 'flex';
+            document.getElementById('editFacilitiesContainer').style.display = isEditing ? 'block' : 'none';
+            if(isEditing) renderFacilityPicker('editFacilityPicker', item.facilities || [], true);
             
             if(isEditing) { setupTypePickers(); walkHistory = []; }
             document.querySelectorAll('.edit-input').forEach(inp => inp.classList.toggle('active', isEditing));
@@ -2626,6 +2816,18 @@
                 sampledPoints.push(L.latLng(path[path.length - 1][0], path[path.length - 1][1]));
                 const res = await fetch('https://api.open-elevation.com/api/v1/lookup', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ locations: sampledPoints.map(p => ({ latitude: p.lat, longitude: p.lng })) }), signal: signal }).then(r=>r.json());
                 const elevs = res.results.map(r => r.elevation); 
+                
+                if (!activeSelectionId && currentMode === 'walk') {
+                    if (graphOpen || forceOpen) {
+                        const isImp = storage.units === 'imperial';
+                        let currentTotal = 0, distData = [0]; for(let i = 1; i < sampledPoints.length; i++){ currentTotal += sampledPoints[i-1].distanceTo(sampledPoints[i]); distData.push(currentTotal / 1000); }
+                        document.getElementById('elevation-dock').classList.add('active');
+                        const ctx = document.getElementById('elevChart').getContext('2d'); if(chartInstance) chartInstance.destroy();
+                        chartInstance = new Chart(ctx, { type:'line', data:{ labels: distData.map(d => isImp ? (d * 0.621371).toFixed(1) : d.toFixed(1)), datasets:[{ data: elevs.map(e => isImp ? e * 3.28084 : e), borderColor:'#2563eb', backgroundColor: 'rgba(37, 99, 235, 0.15)', fill:true, pointRadius:0, borderWidth: 2, tension:0.4, cubicInterpolationMode: 'monotone' }] }, options:{ maintainAspectRatio:false, plugins:{ legend:{display:false} }, scales:{ x:{ title:{display:true, text: isImp ? 'mi' : 'km'} }, y:{ title:{display:true, text: isImp ? 'ft' : 'm'}, position:'right' } } } });
+                    }
+                    return;
+                }
+
                 const item = storage.walks.find(w => w.id === activeSelectionId);
                 if (item) item.elevData = elevs; 
                 if (graphOpen || forceOpen) {
@@ -2805,7 +3007,7 @@
 
             if(emojiPicker) {
                 emojiPicker.innerHTML = '';
-                AVATAR_EMOJIS.forEach(e => {
+                BASIC_EMOJIS.forEach(e => {
                     const span = document.createElement('span');
                     span.className = 'emoji-option';
                     span.innerText = e;
@@ -2816,6 +3018,15 @@
                     };
                     emojiPicker.appendChild(span);
                 });
+                
+                // Add "More" button
+                const moreBtn = document.createElement('span');
+                moreBtn.className = 'emoji-option';
+                moreBtn.innerText = '➕';
+                moreBtn.style.background = 'var(--primary)';
+                moreBtn.style.color = 'white';
+                moreBtn.onclick = openEmojiModal;
+                emojiPicker.appendChild(moreBtn);
             }
 
             picker.innerHTML = '';
@@ -2827,6 +3038,29 @@
                 dot.onclick = () => saveProfileColor(c);
                 picker.appendChild(dot);
             });
+        }
+
+        function openEmojiModal() {
+            const grid = document.getElementById('fullEmojiGrid');
+            grid.innerHTML = '';
+            ALL_EMOJIS.forEach(e => {
+                const span = document.createElement('span');
+                span.className = 'emoji-option';
+                span.style.width = '100%';
+                span.style.height = '40px';
+                span.style.fontSize = '20px';
+                span.innerText = e;
+                span.onclick = () => {
+                    const textInput = document.getElementById('avatarTextInput');
+                    const preview = document.getElementById('settingsAvatarPreview');
+                    if(textInput) textInput.value = e;
+                    if(preview) preview.innerText = e;
+                    saveAvatarText(e);
+                    document.getElementById('emoji-modal-overlay').style.display = 'none';
+                };
+                grid.appendChild(span);
+            });
+            document.getElementById('emoji-modal-overlay').style.display = 'flex';
         }
 
         async function saveAvatarText(text) {
