@@ -2398,6 +2398,22 @@
 
             if (elevationAbortController) { elevationAbortController.abort(); elevationAbortController = null; }
             activeSelectionId = item.id; isEditing = false; graphOpen = false; selectedColor = item.color || PIN_TYPES[0].color;
+            
+            // Fetch latest data (comments, rating) from cloud
+            const collectionName = item.path ? 'walks' : 'pins';
+            db.collection(collectionName).doc(item.id.toString()).get().then(doc => {
+                if(doc.exists && activeSelectionId === item.id) {
+                    const data = doc.data();
+                    item.comments = data.comments || [];
+                    item.rating = data.rating || 0;
+                    if(data.photos) item.photos = data.photos;
+                    saveData();
+                    renderComments(item);
+                    updateDetailRating(item);
+                    updateHighlights();
+                }
+            }).catch(e => console.log("Background fetch failed", e));
+
             editingCommentId = null;
             document.getElementById('editTypeContainer').style.display = 'none'; document.getElementById('explore-panel').style.display = 'none'; document.getElementById('add-panel').style.display = 'none'; document.getElementById('settings-panel').style.display = 'none'; document.getElementById('mainTabs').style.display = 'none'; document.getElementById('mainSearch').style.display = 'none'; 
             document.getElementById('backBtn').style.display = 'flex'; document.getElementById('minimizeBtn').style.display = 'none';
@@ -2751,12 +2767,13 @@
             const total = item.comments.reduce((acc, c) => acc + c.rating, 0);
             item.rating = parseFloat((total / item.comments.length).toFixed(1));
 
-            saveData(); await saveToCloud(item.path ? 'walks' : 'pins', item);
+            saveData(); 
             closeReviewModal();
             renderComments(item); updateHighlights();
             updateDetailRating(item);
             tempReviewPhotos = [];
             updateMyLogList();
+            await saveToCloud(item.path ? 'walks' : 'pins', item);
         }
 
         function editComment(itemId, commentId) {
