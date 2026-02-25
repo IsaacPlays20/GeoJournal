@@ -1057,23 +1057,24 @@
             { name: 'Nature', color: '#10b981', icon: '🌿' },
             { name: 'History', color: '#ef4444', icon: '🏛️' },
             { name: 'Culture', color: '#d97706', icon: '🎨' },
-            { name: 'Paid', color: '#8b5cf6', icon: '🎟️' },
+            { name: 'Mountain', color: '#8b5cf6', icon: '⛰️' },
             { name: 'Water', color: '#3b82f6', icon: '💧' },
-            { name: 'Activity', color: '#eab308', icon: '⚽' },
-            { name: 'Event', color: '#ec4899', icon: '📅' },
-            { name: 'Tourist', color: '#06b6d4', icon: '📸' }
+            { name: 'Rock Formation', color: '#eab308', icon: '🪨' },
+            { name: 'Landmark', color: '#ec4899', icon: '🗿' },
+            { name: 'Waterfall', color: '#06b6d4', icon: '🌊' }
         ];
 
         const FACILITIES = [
-            { id: 'parking', label: 'Car Park', icon: '🅿️' },
-            { id: 'free_parking', label: 'Free Parking', icon: '🆓' },
-            { id: 'transport', label: 'Public Transport', icon: '🚌' },
-            { id: 'toilets', label: 'Toilets', icon: '🚻' },
-            { id: 'fires', label: 'Fires Allowed', icon: '🔥' },
-            { id: 'bins', label: 'Bins', icon: '🗑️' },
+            { id: 'parking', label: 'Car Park Nearby', icon: '🅿️' },
+            { id: 'free_parking', label: 'Free Parking Nearby', icon: '🆓' },
+            { id: 'transport', label: 'Public Transport Nearby', icon: '🚌' },
+            { id: 'toilets', label: 'Toilets Nearby', icon: '🚻' },
+            { id: 'shop', label: 'Shop Nearby', icon: '🛒' },
+            { id: 'cafe', label: 'Cafe Nearby', icon: '☕' },
+            { id: 'bins', label: 'Bins Nearby', icon: '🗑️' },
             { id: 'pets', label: 'Pets Allowed', icon: '🐾' },
-            { id: 'camping', label: 'Camping', icon: '⛺' },
-            { id: 'wheelchair', label: 'Wheelchair', icon: '♿' }
+            { id: 'camping', label: 'Camping Nearby', icon: '⛺' },
+            { id: 'wheelchair', label: 'Wheelchair Accessable', icon: '♿' }
         ];
 
         const AVATAR_COLORS = [
@@ -1815,12 +1816,16 @@
             const isOwner = currentUser && item.userId === currentUser.uid;
             let ownerHtml = '';
             if (isOwner) {
+                const btnText = isEditing ? '✅ Finish Editing' : '🖋️ Edit Entry';
+                const btnBg = isEditing ? 'var(--accent)' : 'var(--primary)';
+                const delDisplay = isEditing ? 'flex' : 'none';
+
                 ownerHtml = `
                     <div style="display:flex; gap:8px; margin-bottom:4px;">
-                        <button class="btn" id="bigEditBtn" onclick="toggleEditingLogic()" style="flex:1; height:44px; font-size:13px; background:var(--primary); border:none; color:white; display:flex; align-items:center; justify-content:center; gap:8px; font-weight:700; border-radius:12px; box-shadow:0 2px 5px rgba(0,0,0,0.1);">
-                            🖋️ Edit Entry
+                        <button class="btn" id="bigEditBtn" onclick="toggleEditingLogic()" style="flex:1; height:44px; font-size:13px; background:${btnBg}; border:none; color:white; display:flex; align-items:center; justify-content:center; gap:8px; font-weight:700; border-radius:12px; box-shadow:0 2px 5px rgba(0,0,0,0.1);">
+                            ${btnText}
                         </button>
-                        <button class="btn" id="bigDeleteBtn" onclick="deleteAction()" style="display:none; width:44px; height:44px; background:var(--danger); border:none; color:white; align-items:center; justify-content:center; border-radius:12px; box-shadow:0 2px 5px rgba(0,0,0,0.1);">🗑️</button>
+                        <button class="btn" id="bigDeleteBtn" onclick="deleteAction()" style="display:${delDisplay}; width:44px; height:44px; background:var(--danger); border:none; color:white; align-items:center; justify-content:center; border-radius:12px; box-shadow:0 2px 5px rgba(0,0,0,0.1);">🗑️</button>
                     </div>
                 `;
             }
@@ -2224,6 +2229,7 @@
             FACILITIES.forEach(f => {
                 const btn = document.createElement('div');
                 btn.className = 'facility-btn';
+                btn.dataset.id = f.id;
                 if(selectedIds.includes(f.id)) btn.classList.add('active');
                 btn.innerHTML = `<div class="facility-check"></div><span>${f.label}</span>`;
                 btn.onclick = () => {
@@ -2250,7 +2256,7 @@
             const container = document.getElementById(containerId);
             if(!container) return [];
             const selected = [];
-            container.querySelectorAll('.facility-btn.active').forEach((btn, index) => selected.push(FACILITIES[index].id));
+            container.querySelectorAll('.facility-btn.active').forEach(btn => selected.push(btn.dataset.id));
             return selected;
         }
 
